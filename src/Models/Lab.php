@@ -15,41 +15,7 @@ class Lab
     }
 
     /**
-     * Genera un UUID para el PDF del horario
-     */
-    private function generatePdfUuid(string $extension = 'pdf'): string
-    {
-        return bin2hex(random_bytes(16)) . '.' . strtolower($extension);
-    }
-
-    /**
-     * Valida que el archivo sea PDF
-     */
-    private function validatePdf(array $file): ?string
-    {
-        if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
-            return null;
-        }
-
-        $allowedMimes = ['application/pdf'];
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-
-        if (!in_array($mime, $allowedMimes)) {
-            return 'El archivo debe ser un PDF válido';
-        }
-
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        if ($ext !== 'pdf') {
-            return 'La extensión debe ser .pdf';
-        }
-
-        return null;
-    }
-
-    /**
-     * Obtiene todos los laboratorios con su responsable (JOIN academico)
+     * Obtiene todos los laboratorios con su responsable (LEFT JOIN academico)
      * Incluye tanto activos como inactivos
      */
     public function findAll(): array
@@ -105,7 +71,7 @@ class Lab
     }
 
     /**
-     * Busca un laboratorio por ID con su responsable (JOIN academico)
+     * Busca un laboratorio por ID con su responsable (LEFT JOIN academico)
      */
     public function findById(int $id): ?array
     {
@@ -135,10 +101,10 @@ class Lab
     public function nombreExists(string $nombre, ?int $excludeId = null): bool
     {
         if ($excludeId !== null) {
-            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM laboratorio WHERE nombre_lab = ? AND id_lab != ? AND activo = 1");
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM laboratorio WHERE nombre_lab = ? AND id_lab != ?");
             $stmt->execute([$nombre, $excludeId]);
         } else {
-            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM laboratorio WHERE nombre_lab = ? AND activo = 1");
+            $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM laboratorio WHERE nombre_lab = ?");
             $stmt->execute([$nombre]);
         }
         return (int)$stmt->fetchColumn() > 0;
@@ -156,6 +122,9 @@ class Lab
 
     /**
      * Crea un nuevo laboratorio
+     * @param array $data Array con: nombre_lab, resp_acad_id, horario_lab (opcional), activo (opcional, default 1)
+     * @return int ID del registro insertado
+     * @throws \Exception si validación falla
      */
     public function create(array $data): int
     {
@@ -175,20 +144,7 @@ class Lab
             throw new \Exception("El responsable seleccionado no existe");
         }
 
-        // Validar PDF si se subió
-        if (isset($data['horario_file']) && $data['horario_file'] !== null) {
-            $pdfError = $this->validatePdf($data['horario_file']);
-            if ($pdfError) {
-                throw new \Exception($pdfError);
-            }
-        }
-
-        // UUID para PDF si se subió
-        $horarioLab = null;
-        if (isset($data['horario_file']) && $data['horario_file'] !== null) {
-            $ext = pathinfo($data['horario_file']['name'], PATHINFO_EXTENSION);
-            $horarioLab = $this->generatePdfUuid($ext);
-        }
+        $horarioLab = $data['horario_lab'] ?? null;
 
         $sql = "
             INSERT INTO laboratorio (nombre_lab, resp_acad_id, horario_lab, activo)
@@ -207,6 +163,10 @@ class Lab
 
     /**
      * Actualiza un laboratorio existente
+     * @param int $id ID del laboratorio
+     * @param array $data Array con: nombre_lab, resp_acad_id, horario_lab (opcional), activo (opcional, default 1)
+     * @return bool true si se actualizó, false si no
+     * @throws \Exception si validación falla
      */
     public function update(int $id, array $data): bool
     {
@@ -232,20 +192,7 @@ class Lab
             throw new \Exception("El responsable seleccionado no existe");
         }
 
-        // Validar PDF si se subió
-        if (isset($data['horario_file']) && $data['horario_file'] !== null) {
-            $pdfError = $this->validatePdf($data['horario_file']);
-            if ($pdfError) {
-                throw new \Exception($pdfError);
-            }
-        }
-
-        // UUID para PDF si se subió
-        $horarioLab = $existing['horario_lab'];
-        if (isset($data['horario_file']) && $data['horario_file'] !== null) {
-            $ext = pathinfo($data['horario_file']['name'], PATHINFO_EXTENSION);
-            $horarioLab = $this->generatePdfUuid($ext);
-        }
+        $horarioLab = $data['horario_lab'] ?? $existing['horario_lab'];
 
         $sql = "
             UPDATE laboratorio 
