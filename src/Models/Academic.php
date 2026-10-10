@@ -37,9 +37,10 @@ class Academic
      */
     public function findAll(): array
     {
+        // En findAll NO debe haber ningún "WHERE a.id_acad = ?"
         $sql = "
             SELECT a.id_acad, a.nom_acad, a.foto_acad, a.cel_acad, a.email_acad, 
-                   a.cat_acad, c.cat_nombre, a.desc_acad
+            a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
             ORDER BY a.nom_acad ASC
@@ -53,9 +54,10 @@ class Academic
      */
     public function findById(int $id): ?array
     {
+        // findById SÍ requiere el "WHERE a.id_acad = ?"
         $sql = "
             SELECT a.id_acad, a.nom_acad, a.foto_acad, a.cel_acad, a.email_acad, 
-                   a.cat_acad, c.cat_nombre, a.desc_acad
+            a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
             WHERE a.id_acad = ?
@@ -80,7 +82,7 @@ class Academic
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$email]);
         }
-        return (int)$stmt->fetchColumn() > 0;
+        return (int) $stmt->fetchColumn() > 0;
     }
 
     /**
@@ -90,12 +92,12 @@ class Academic
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM categoria_academico WHERE cat_id = ?");
         $stmt->execute([$catId]);
-        return (int)$stmt->fetchColumn() > 0;
+        return (int) $stmt->fetchColumn() > 0;
     }
 
     /**
      * Crea un nuevo académico
-     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional)
+     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional), mostrar_email, mostrar_cel
      * @return int ID del registro insertado
      * @throws \Exception si validación falla
      */
@@ -117,7 +119,7 @@ class Academic
             throw new \Exception("El email ya está registrado");
         }
 
-        if (!$this->categoryExists((int)$data['cat_acad'])) {
+        if (!$this->categoryExists((int) $data['cat_acad'])) {
             throw new \Exception("La categoría seleccionada no existe");
         }
 
@@ -125,8 +127,8 @@ class Academic
         $foto = $data['foto_acad'] ?? 'default.png';
 
         $sql = "
-            INSERT INTO academico (nom_acad, foto_acad, cel_acad, email_acad, cat_acad, desc_acad, usu_id)
-            VALUES (?, ?, ?, ?, ?, ?, NULL)
+            INSERT INTO academico (nom_acad, foto_acad, cel_acad, email_acad, cat_acad, desc_acad, mostrar_email, mostrar_cel, usu_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)
         ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -134,17 +136,19 @@ class Academic
             $foto,
             $data['cel_acad'],
             $data['email_acad'],
-            (int)$data['cat_acad'],
-            $data['desc_acad']
+            (int) $data['cat_acad'],
+            $data['desc_acad'],
+            (int) ($data['mostrar_email'] ?? 0),
+            (int) ($data['mostrar_cel'] ?? 0)
         ]);
 
-        return (int)$this->pdo->lastInsertId();
+        return (int) $this->pdo->lastInsertId();
     }
 
     /**
      * Actualiza un académico existente
      * @param int $id ID del académico
-     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional)
+     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional), mostrar_email, mostrar_cel
      * @return bool true si se actualizó, false si no
      * @throws \Exception si validación falla
      */
@@ -172,7 +176,7 @@ class Academic
             throw new \Exception("El email ya está registrado por otro académico");
         }
 
-        if (!$this->categoryExists((int)$data['cat_acad'])) {
+        if (!$this->categoryExists((int) $data['cat_acad'])) {
             throw new \Exception("La categoría seleccionada no existe");
         }
 
@@ -181,7 +185,7 @@ class Academic
 
         $sql = "
             UPDATE academico 
-            SET nom_acad = ?, foto_acad = ?, cel_acad = ?, email_acad = ?, cat_acad = ?, desc_acad = ?
+            SET nom_acad = ?, foto_acad = ?, cel_acad = ?, email_acad = ?, cat_acad = ?, desc_acad = ?, mostrar_email = ?, mostrar_cel = ?
             WHERE id_acad = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -190,8 +194,10 @@ class Academic
             $foto,
             $data['cel_acad'],
             $data['email_acad'],
-            (int)$data['cat_acad'],
+            (int) $data['cat_acad'],
             $data['desc_acad'],
+            (int) ($data['mostrar_email'] ?? 0),
+            (int) ($data['mostrar_cel'] ?? 0),
             $id
         ]);
 

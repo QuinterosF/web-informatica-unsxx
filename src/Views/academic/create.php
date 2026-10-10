@@ -47,24 +47,42 @@ ob_start();
                     <input type="email" id="email_acad" name="email_acad" required
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all"
                         value="<?= htmlspecialchars($old['email_acad'] ?? '') ?>">
+                    <!-- Toggle Privacidad Email -->
+                    <label class="inline-flex items-center cursor-pointer mt-2">
+                        <input type="checkbox" name="mostrar_email" value="1" class="sr-only peer" <?= !isset($old) || (isset($old['mostrar_email']) && $old['mostrar_email']) ? 'checked' : '' ?>>
+                        <div
+                            class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-unsxx-blue-600">
+                        </div>
+                        <span class="ms-2 text-xs font-medium text-gray-600">Mostrar públicamente en el portal</span>
+                    </label>
                 </div>
 
                 <!-- Celular -->
                 <div>
-                    <label for="cel_acad" class="block text-sm font-medium text-gray-700 mb-1">Celular</label>
+                    <label for="cel_acad" class="block text-sm font-medium text-gray-700 mb-1">Celular <span
+                            class="text-red-500">*</span></label>
                     <input type="text" id="cel_acad" name="cel_acad"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all"
                         value="<?= htmlspecialchars($old['cel_acad'] ?? '') ?>">
+                    <!-- Toggle Privacidad Celular -->
+                    <label class="inline-flex items-center cursor-pointer mt-2">
+                        <input type="checkbox" name="mostrar_cel" value="1" class="sr-only peer" <?= !isset($old) || (isset($old['mostrar_cel']) && $old['mostrar_cel']) ? 'checked' : '' ?>>
+                        <div
+                            class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-unsxx-blue-600">
+                        </div>
+                        <span class="ms-2 text-xs font-medium text-gray-600">Mostrar públicamente en el portal</span>
+                    </label>
                 </div>
 
                 <!-- Categoría -->
                 <div>
-                    <label for="cat_acad" class="block text-sm font-medium text-gray-700 mb-1">Categoría <span class="text-red-500">*</span></label>
-                    <select id="cat_acad" name="cat_acad" required 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all bg-white">
+                    <label for="cat_acad" class="block text-sm font-medium text-gray-700 mb-1">Categoría <span
+                            class="text-red-500">*</span></label>
+                    <select id="cat_acad" name="cat_acad" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all bg-white">
                         <option value="">Seleccione una categoría</option>
-                        <?php if(!empty($categories)): ?>
-                            <?php foreach($categories as $cat): ?>
+                        <?php if (!empty($categories)): ?>
+                            <?php foreach ($categories as $cat): ?>
                                 <option value="<?= $cat['cat_id'] ?>" <?= (isset($old['cat_acad']) && $old['cat_acad'] == $cat['cat_id']) ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($cat['cat_nombre']) ?>
                                 </option>

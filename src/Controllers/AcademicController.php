@@ -46,6 +46,8 @@ class AcademicController extends Controller
             'email_acad' => trim($_POST['email_acad'] ?? ''),
             'cat_acad' => (int) ($_POST['cat_acad'] ?? 0),
             'desc_acad' => trim($_POST['desc_acad'] ?? ''),
+            'mostrar_email' => isset($_POST['mostrar_email']) ? 1 : 0,
+            'mostrar_cel' => isset($_POST['mostrar_cel']) ? 1 : 0,
         ];
 
         try {
@@ -104,6 +106,8 @@ class AcademicController extends Controller
             'email_acad' => trim($_POST['email_acad'] ?? ''),
             'cat_acad' => (int) ($_POST['cat_acad'] ?? 0),
             'desc_acad' => trim($_POST['desc_acad'] ?? ''),
+            'mostrar_email' => isset($_POST['mostrar_email']) ? 1 : 0,
+            'mostrar_cel' => isset($_POST['mostrar_cel']) ? 1 : 0,
         ];
 
         try {
