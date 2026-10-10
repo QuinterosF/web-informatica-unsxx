@@ -9,6 +9,7 @@ use App\Controllers\ExtensionController;
 use App\Controllers\AnnouncementController;
 use App\Controllers\AdmissionController;
 use App\Controllers\OfficialDocumentController;
+use App\Controllers\MentionController;
 use App\Middleware\AuthMiddleware;
 
 $router = new Router();
@@ -98,6 +99,16 @@ $router->get('/documents/{id}/edit', [OfficialDocumentController::class, 'edit']
 $router->post('/documents/{id}/edit', [OfficialDocumentController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/documents/{id}', [OfficialDocumentController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/documents/{id}/delete', [OfficialDocumentController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* ==================== CRUD MENCIONES E IIDAI (protegido) ==================== */
+$router->get('/mentions', [MentionController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/mentions/create', [MentionController::class, 'create'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/mentions', [MentionController::class, 'store'])->middleware([AuthMiddleware::class, 'handle']);
+
+$router->get('/mentions/{id}/edit', [MentionController::class, 'edit'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/mentions/{id}/edit', [MentionController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/mentions/{id}', [MentionController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/mentions/{id}/delete', [MentionController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
 
 /* ==================== FUTUROS MÓDULOS (placeholder) ==================== */
 // Extensión

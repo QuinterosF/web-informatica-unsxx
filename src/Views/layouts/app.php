@@ -172,7 +172,7 @@
                         <span>Plantel Docente</span>
                     </a>
 
-                    <a href="/institution/specialties"
+                    <a href="/mentions"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
                         <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             stroke-width="2">
