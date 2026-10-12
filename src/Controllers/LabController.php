@@ -232,16 +232,35 @@ class LabController extends Controller
      */
     public function destroy(int $id): void
     {
-        try {
-            $existing = $this->model->findById($id);
+        // 1. Buscar el laboratorio
+        $lab = $this->model->findById($id);
 
+        if (!$lab) {
+            $_SESSION['error'] = 'Laboratorio no encontrado';
+            header('Location: /labs');
+            exit;
+        }
+
+        try {
+            // 2. Buscar todas las fotos de la galería
+            $photos = $this->model->getGallery($id);
+
+            // 3. Eliminar archivos físicos de la galería
+            foreach ($photos as $photo) {
+                if (!empty($photo['archivo_url'])) {
+                    FileUploader::delete($photo['archivo_url'], 'img/laboratorios');
+                }
+            }
+
+            // 4. Borrar PDF del horario si existe
+            if (!empty($lab['horario_lab'])) {
+                FileUploader::delete($lab['horario_lab'], 'pdf/laboratorios');
+            }
+
+            // 5. Eliminar de la base de datos (CASCADE eliminará registros de galería)
             $deleted = $this->model->delete($id);
 
             if ($deleted) {
-                // Borrar archivo PDF físico asociado si existe
-                if ($existing && $existing['horario_lab']) {
-                    FileUploader::delete($existing['horario_lab'], 'pdf/laboratorios');
-                }
                 $_SESSION['success'] = 'Laboratorio eliminado correctamente';
             } else {
                 $_SESSION['error'] = 'El laboratorio no existe';
@@ -251,6 +270,120 @@ class LabController extends Controller
         }
 
         header('Location: /labs');
+        exit;
+    }
+
+    /**
+     * Galería de fotos de un laboratorio
+     * GET /labs/{id}/gallery
+     */
+    public function gallery(int $id): void
+    {
+        $lab = $this->model->findById($id);
+
+        if (!$lab) {
+            $_SESSION['error'] = 'Laboratorio no encontrado';
+            header('Location: /labs');
+            exit;
+        }
+
+        $photos = $this->model->getGallery($id);
+        $this->view('lab/gallery', [
+            'lab' => $lab,
+            'photos' => $photos,
+            'title' => 'Galería - ' . $lab['nombre_lab'],
+            'pageTitle' => 'Galería de ' . $lab['nombre_lab']
+        ]);
+    }
+
+    /**
+     * Sube múltiples fotos a la galería
+     * POST /labs/{id}/gallery/upload
+     */
+    public function uploadPhotos(int $id): void
+    {
+        $lab = $this->model->findById($id);
+
+        if (!$lab) {
+            $_SESSION['error'] = 'Laboratorio no encontrado';
+            header('Location: /labs');
+            exit;
+        }
+
+        if (!isset($_FILES['fotos']) || empty($_FILES['fotos']['name'][0])) {
+            $_SESSION['error'] = 'No se seleccionaron archivos';
+            header('Location: /labs/' . $id . '/gallery');
+            exit;
+        }
+
+        $uploadedCount = 0;
+        $files = $_FILES['fotos'];
+        $fileCount = count($files['name']);
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            $file = [
+                'name' => $files['name'][$i],
+                'type' => $files['type'][$i],
+                'tmp_name' => $files['tmp_name'][$i],
+                'error' => $files['error'][$i],
+                'size' => $files['size'][$i],
+            ];
+
+            if ($file['error'] === UPLOAD_ERR_OK) {
+                $uploaded = FileUploader::uploadImage($file, 'laboratorios');
+                if ($uploaded) {
+                    $this->model->addPhoto($id, $uploaded);
+                    $uploadedCount++;
+                }
+            }
+        }
+
+        if ($uploadedCount > 0) {
+            $_SESSION['success'] = "Se subieron {$uploadedCount} foto(s) correctamente";
+        } else {
+            $_SESSION['error'] = 'No se pudo subir ninguna foto';
+        }
+
+        header('Location: /labs/' . $id . '/gallery');
+        exit;
+    }
+
+    /**
+     * Elimina una foto de la galería
+     * POST /labs/{id_lab}/gallery/delete/{id_foto}
+     */
+    public function deletePhoto(int $id_lab, int $id_foto): void
+    {
+        $photo = $this->model->getPhoto($id_foto);
+
+        if ($photo) {
+            // Borrar archivo físico
+            FileUploader::delete($photo['archivo_url'], 'img/laboratorios');
+            // Borrar de BD
+            $this->model->deletePhoto($id_foto);
+            $_SESSION['success'] = 'Foto eliminada correctamente';
+        } else {
+            $_SESSION['error'] = 'Foto no encontrada';
+        }
+
+        header('Location: /labs/' . $id_lab . '/gallery');
+        exit;
+    }
+
+    /**
+     * Establece una foto como portada
+     * POST /labs/{id_lab}/gallery/cover/{id_foto}
+     */
+    public function setCover(int $id_lab, int $id_foto): void
+    {
+        try {
+            $this->model->setCoverPhoto($id_foto, $id_lab);
+            $_SESSION['success'] = 'Portada actualizada correctamente';
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Error al establecer portada: ' . $e->getMessage();
+        }
+
+        header('Location: /labs/' . $id_lab . '/gallery');
         exit;
     }
 }

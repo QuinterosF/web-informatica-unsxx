@@ -64,6 +64,12 @@ $router->post('/labs/{id}/edit', [LabController::class, 'update'])->middleware([
 $router->post('/labs/{id}', [LabController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/labs/{id}/delete', [LabController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
 
+// --- Galería de Laboratorios ---
+$router->get('/labs/{id}/gallery', [LabController::class, 'gallery'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/labs/{id}/gallery', [LabController::class, 'uploadPhotos'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/labs/{id_lab}/gallery/{id_foto}/delete', [LabController::class, 'deletePhoto'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/labs/{id_lab}/gallery/{id_foto}/cover', [LabController::class, 'setCover'])->middleware([AuthMiddleware::class, 'handle']);
+
 /* ==================== CRUD EXTENSIÓN (protegido) ==================== */
 $router->get('/extensions', [ExtensionController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
 $router->get('/extensions/create', [ExtensionController::class, 'create'])->middleware([AuthMiddleware::class, 'handle']);

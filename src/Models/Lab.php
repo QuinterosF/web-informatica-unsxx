@@ -29,7 +29,8 @@ class Lab
                 l.resp_acad_id,
                 a.id_acad,
                 a.nom_acad AS responsable_nombre,
-                a.email_acad AS responsable_email
+                a.email_acad AS responsable_email,
+                (SELECT COUNT(*) FROM laboratorio_galeria g WHERE g.id_lab = l.id_lab) AS total_fotos
             FROM laboratorio l
             LEFT JOIN academico a ON l.resp_acad_id = a.id_acad
             ORDER BY l.nombre_lab
@@ -52,7 +53,8 @@ class Lab
                 l.resp_acad_id,
                 a.id_acad,
                 a.nom_acad AS responsable_nombre,
-                a.email_acad AS responsable_email
+                a.email_acad AS responsable_email,
+                (SELECT COUNT(*) FROM laboratorio_galeria g WHERE g.id_lab = l.id_lab) AS total_fotos
             FROM laboratorio l
             LEFT JOIN academico a ON l.resp_acad_id = a.id_acad
             WHERE l.activo = 1
@@ -224,5 +226,83 @@ class Lab
         $stmt = $this->pdo->prepare("DELETE FROM laboratorio WHERE id_lab = ?");
         $stmt->execute([$id]);
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Obtiene todas las fotos de la galería de un laboratorio
+     * Ordenadas con la portada primero, luego por fecha descendente
+     */
+    public function getGallery(int $id_lab): array
+    {
+        $sql = "
+            SELECT * FROM laboratorio_galeria 
+            WHERE id_lab = ? 
+            ORDER BY es_portada DESC, subido_el DESC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id_lab]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Obtiene una foto específica de la galería por su ID
+     */
+    public function getPhoto(int $id_foto): ?array
+    {
+        $sql = "SELECT * FROM laboratorio_galeria WHERE id_foto = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id_foto]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
+
+    /**
+     * Agrega una nueva foto a la galería del laboratorio
+     */
+    public function addPhoto(int $id_lab, string $archivo_url, int $es_portada = 0): bool
+    {
+        $sql = "
+            INSERT INTO laboratorio_galeria (id_lab, archivo_url, es_portada)
+            VALUES (?, ?, ?)
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id_lab, $archivo_url, (int)$es_portada]);
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Elimina una foto de la galería
+     */
+    public function deletePhoto(int $id_foto): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM laboratorio_galeria WHERE id_foto = ?");
+        $stmt->execute([$id_foto]);
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Establece una foto como portada del laboratorio
+     * Usa transacción para asegurar integridad
+     */
+    public function setCoverPhoto(int $id_foto, int $id_lab): void
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            // Quitar portada actual
+            $sql = "UPDATE laboratorio_galeria SET es_portada = 0 WHERE id_lab = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id_lab]);
+
+            // Asignar nueva portada
+            $sql = "UPDATE laboratorio_galeria SET es_portada = 1 WHERE id_foto = ? AND id_lab = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id_foto, $id_lab]);
+
+            $this->pdo->commit();
+        } catch (\Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 }
