@@ -66,9 +66,10 @@ class OfficialDocument
             }
         }
 
-        $allowedCategories = ['plan_estudios', 'horario_clases', 'horario_labs', 'reglamento_titulacion', 'convocatoria', 'otro'];
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        // Si la categoría no es válida, asignar 'otro' por defecto
         if (!in_array($data['categoria'], $allowedCategories, true)) {
-            throw new \Exception("Categoría inválida");
+            $data['categoria'] = 'otro';
         }
 
         $sql = "
@@ -105,9 +106,10 @@ class OfficialDocument
             }
         }
 
-        $allowedCategories = ['plan_estudios', 'horario_clases', 'horario_labs', 'reglamento_titulacion', 'convocatoria', 'otro'];
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        // Si la categoría no es válida, asignar 'otro' por defecto
         if (!in_array($data['categoria'], $allowedCategories, true)) {
-            throw new \Exception("Categoría inválida");
+            $data['categoria'] = 'otro';
         }
 
         $archivoPdf = $existing['archivo_pdf'] ?? '';

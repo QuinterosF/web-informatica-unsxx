@@ -50,6 +50,19 @@ class AcademicController extends Controller
             'mostrar_cel' => isset($_POST['mostrar_cel']) ? 1 : 0,
         ];
 
+        // Validación de seguridad: formato de celular
+        if (!empty($data['cel_acad']) && !preg_match('/^[0-9\+\-\s]*$/', $data['cel_acad'])) {
+            $categories = $this->model->getCategories();
+            $_SESSION['error'] = 'El número de celular contiene caracteres no válidos.';
+            $this->view('academic/create', [
+                'categories' => $categories,
+                'title' => 'Nuevo Docente y Administrativo',
+                'pageTitle' => 'Nuevo Docente y Administrativo',
+                'old' => $_POST
+            ]);
+            return;
+        }
+
         try {
             // 1. Validar y procesar archivo obligatorio
             if (!isset($_FILES['foto_acad']) || $_FILES['foto_acad']['error'] !== UPLOAD_ERR_OK) {
@@ -73,8 +86,8 @@ class AcademicController extends Controller
             $_SESSION['error'] = $e->getMessage();
             $this->view('academic/create', [
                 'categories' => $categories,
-                'title' => 'Nuevo Docente',
-                'pageTitle' => 'Nuevo Docente',
+                'title' => 'Nuevo Docente y Administrativo',
+                'pageTitle' => 'Nuevo Docente y Administrativo',
                 'old' => $_POST
             ]);
         }
@@ -110,6 +123,21 @@ class AcademicController extends Controller
             'mostrar_cel' => isset($_POST['mostrar_cel']) ? 1 : 0,
         ];
 
+        // Validación de seguridad: formato de celular
+        if (!empty($data['cel_acad']) && !preg_match('/^[0-9\+\-\s]*$/', $data['cel_acad'])) {
+            $academic = $this->model->findById($id);
+            $categories = $this->model->getCategories();
+            $_SESSION['error'] = 'El número de celular contiene caracteres no válidos.';
+            $this->view('academic/edit', [
+                'academic' => $academic,
+                'categories' => $categories,
+                'title' => 'Editar Docente y Administrativo',
+                'pageTitle' => 'Editar Docente y Administrativo',
+                'old' => $_POST
+            ]);
+            return;
+        }
+
         try {
             $academic = $this->model->findById($id);
             if (!$academic) {
@@ -137,8 +165,8 @@ class AcademicController extends Controller
             $this->view('academic/edit', [
                 'academic' => $academic,
                 'categories' => $categories,
-                'title' => 'Editar Docente',
-                'pageTitle' => 'Editar Docente',
+                'title' => 'Editar Docente y Administrativo',
+                'pageTitle' => 'Editar Docente y Administrativo',
                 'old' => $_POST
             ]);
         }

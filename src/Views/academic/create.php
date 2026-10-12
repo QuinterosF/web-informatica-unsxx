@@ -1,12 +1,12 @@
 <?php
-$title = 'Nuevo Docente - Informática UNSXX';
-$pageTitle = 'Nuevo Docente';
+$title = 'Nuevo Docente y Administrativo - Informática UNSXX';
+$pageTitle = 'Nuevo Docente y Administrativo';
 ob_start();
 ?>
 
 <!-- Controles Superiores -->
 <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-bold text-unsxx-blue-900 hidden sm:block">Registrar Nuevo Docente</h2>
+    <h2 class="text-xl font-bold text-unsxx-blue-900 hidden sm:block">Registrar Nuevo Docente y Administrativo</h2>
     <a href="/academics"
         class="inline-flex items-center gap-2 text-unsxx-blue-600 hover:text-unsxx-blue-800 font-medium ml-auto">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +118,7 @@ ob_start();
                 </a>
                 <button type="submit"
                     class="px-6 py-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold rounded-lg shadow-sm transition-colors">
-                    Guardar Docente
+                    Guardar
                 </button>
             </div>
 

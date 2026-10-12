@@ -1,12 +1,11 @@
 <?php
 $title = 'Admisión - Informática UNSXX';
-$pageTitle = 'Gestión de Admisiones';
+$pageTitle = 'Procesos de Admisión';
 ob_start();
 ?>
 
 <!-- Controles Superiores -->
 <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-bold text-unsxx-blue-900 hidden sm:block">Procesos de Admisión</h2>
     <a href="/admissions/create"
         class="inline-flex items-center gap-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm ml-auto">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

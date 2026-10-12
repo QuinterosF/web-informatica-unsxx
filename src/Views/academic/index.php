@@ -1,18 +1,30 @@
 <?php
-$title = 'Plantel Docente - Informática UNSXX';
-$pageTitle = 'Plantel Docente';
+$title = 'Plantel Docente y Administrativo - Informática UNSXX';
+$pageTitle = 'Plantel Docente y Administrativo';
+
+function getCategoryBadgeClasses($categoryName) {
+    $badges = [
+        'Director/a'             => 'bg-red-100 text-red-800 border-red-200',
+        'Docente'                => 'bg-blue-100 text-blue-800 border-blue-200',
+        'Coordinador Académico'  => 'bg-purple-100 text-purple-800 border-purple-200',
+        'Coordinador de Mención' => 'bg-orange-100 text-orange-800 border-orange-200',
+        'Coordinador del IIDAI'  => 'bg-teal-100 text-teal-800 border-teal-200',
+        'Secretaria/o'           => 'bg-yellow-100 text-yellow-800 border-yellow-200'
+    ];
+    return $badges[$categoryName] ?? 'bg-gray-100 text-gray-800 border-gray-200';
+}
+
 ob_start();
 ?>
 
 <!-- Controles Superiores -->
 <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-bold text-unsxx-blue-900 hidden sm:block">Gestión de Docentes</h2>
     <a href="/academics/create"
         class="inline-flex items-center gap-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm ml-auto">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-        Nuevo Docente
+        Nuevo Docente/Administrativo
     </a>
 </div>
 
@@ -25,8 +37,8 @@ ob_start();
                     <th data-sortable="false" scope="col" class="px-4 py-3 rounded-tl-lg">Foto</th>
                     <th scope="col" class="px-4 py-3">Nombre</th>
                     <th scope="col" class="px-4 py-3">Email</th>
-                    <th scope="col" class="px-4 py-3">Categoría</th>
                     <th scope="col" class="px-4 py-3">Celular</th>
+                    <th scope="col" class="px-4 py-3">Categoría</th>
                     <th data-sortable="false" scope="col" class="px-4 py-3 rounded-tr-lg">Acciones</th>
                 </tr>
             </thead>
@@ -85,10 +97,14 @@ ob_start();
                                     <?php endif; ?>
                                 </div>
                             </td>
+                            <!-- Categoría -->
                             <td class="px-4 py-3">
-                                <span
-                                    class="px-2.5 py-1 text-xs font-medium rounded-full bg-unsxx-blue-100 text-unsxx-blue-800 border border-unsxx-blue-200">
-                                    <?= htmlspecialchars($academic['cat_nombre']) ?>
+                                <?php 
+                                    $catNombre = $academic['cat_nombre'] ?? 'Sin categoría';
+                                    $badgeColors = getCategoryBadgeClasses($catNombre);
+                                ?>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border <?= $badgeColors ?>">
+                                    <?= htmlspecialchars($catNombre) ?>
                                 </span>
                             </td>
                             <td class="px-4 py-3">

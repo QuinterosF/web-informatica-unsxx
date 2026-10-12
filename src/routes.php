@@ -10,6 +10,10 @@ use App\Controllers\AnnouncementController;
 use App\Controllers\AdmissionController;
 use App\Controllers\OfficialDocumentController;
 use App\Controllers\MentionController;
+use App\Controllers\InstitutionalInfoController;
+use App\Controllers\DirectoryController;
+use App\Controllers\PhoneController;
+use App\Controllers\ServiceLinkController;
 use App\Middleware\AuthMiddleware;
 
 $router = new Router();
@@ -109,6 +113,31 @@ $router->get('/mentions/{id}/edit', [MentionController::class, 'edit'])->middlew
 $router->post('/mentions/{id}/edit', [MentionController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/mentions/{id}', [MentionController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/mentions/{id}/delete', [MentionController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* ==================== IDENTIDAD Y TEXTOS INSTITUCIONALES (Single Record - protegido) ==================== */
+$router->get('/institutional-info', [InstitutionalInfoController::class, 'edit'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/institutional-info', [InstitutionalInfoController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* ==================== DIRECTORIO Y REDES (protegido) ==================== */
+$router->get('/directory', [DirectoryController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* --- Celulares --- */
+$router->get('/directory/phones/create', [PhoneController::class, 'create'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/phones', [PhoneController::class, 'store'])->middleware([AuthMiddleware::class, 'handle']);
+
+$router->get('/directory/phones/{id}/edit', [PhoneController::class, 'edit'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/phones/{id}/edit', [PhoneController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/phones/{id}', [PhoneController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/phones/{id}/delete', [PhoneController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* --- Enlaces de Servicio --- */
+$router->get('/directory/links/create', [ServiceLinkController::class, 'create'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/links', [ServiceLinkController::class, 'store'])->middleware([AuthMiddleware::class, 'handle']);
+
+$router->get('/directory/links/{id}/edit', [ServiceLinkController::class, 'edit'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/links/{id}/edit', [ServiceLinkController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/links/{id}', [ServiceLinkController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/directory/links/{id}/delete', [ServiceLinkController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
 
 /* ==================== FUTUROS MÓDULOS (placeholder) ==================== */
 // Extensión

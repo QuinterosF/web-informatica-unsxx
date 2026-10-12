@@ -38,14 +38,14 @@ class Academic
     public function getCoordinators(): array
     {
         $sql = "
-            SELECT a.id_acad, a.nom_acad
+            SELECT a.id_acad, a.nom_acad 
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
-            WHERE c.cat_nombre LIKE '%Coordinador%' OR c.cat_nombre LIKE '%coordinador%'
+            WHERE c.cat_nombre IN ('Coordinador de Mención', 'Coordinador del IIDAI')
             ORDER BY a.nom_acad ASC
         ";
         $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**

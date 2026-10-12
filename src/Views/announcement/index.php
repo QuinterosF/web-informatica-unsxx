@@ -20,7 +20,6 @@ ob_start();
         <table id="announcementsTable" class="w-full text-sm text-left">
             <thead class="text-xs text-white uppercase bg-unsxx-blue-900">
                 <tr>
-                    <th scope="col" class="px-4 py-3 rounded-tl-lg">ID</th>
                     <th scope="col" class="px-4 py-3 w-1/4">Título</th>
                     <th scope="col" class="px-4 py-3">Fecha</th>
                     <th scope="col" class="px-4 py-3 text-center">Estado</th>
@@ -32,9 +31,6 @@ ob_start();
                 <?php if (!empty($announcements)): ?>
                     <?php foreach ($announcements as $item): ?>
                         <tr class="hover:bg-unsxx-blue-50/50 transition-colors">
-                            <td class="px-4 py-3 font-medium text-gray-500">
-                                #<?= htmlspecialchars($item['id_com']) ?>
-                            </td>
                             <td class="px-4 py-3">
                                 <div class="font-medium text-gray-900 mb-1"><?= htmlspecialchars($item['nom_com']) ?></div>
                                 <div class="text-xs text-gray-500 max-w-xs line-clamp-1" title="<?= htmlspecialchars($item['desc_com']) ?>">
@@ -113,7 +109,8 @@ ob_start();
                     placeholder: "Buscar comunicado...",
                     noRows: "No hay comunicados registrados",
                     info: "Mostrando {start} a {end} de {rows}",
-                    perPage: ""
+                    perPage: "registros por página",
+                    searchLabel: "Buscar: "
                 }
             });
         }

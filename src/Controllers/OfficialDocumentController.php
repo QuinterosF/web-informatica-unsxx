@@ -70,9 +70,12 @@ class OfficialDocumentController extends Controller
             return;
         }
 
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        $categoria = in_array($_POST['categoria'] ?? '', $allowedCategories, true) ? $_POST['categoria'] : 'otro';
+
         $data = [
             'titulo' => trim($_POST['titulo'] ?? ''),
-            'categoria' => $_POST['categoria'] ?? '',
+            'categoria' => $categoria,
             'archivo_pdf' => $filename,
             'gestion' => (int)($_POST['gestion'] ?? 0),
             'estado' => isset($_POST['estado']) ? 1 : 0,
@@ -158,9 +161,12 @@ class OfficialDocumentController extends Controller
             }
         }
 
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        $categoria = in_array($_POST['categoria'] ?? '', $allowedCategories, true) ? $_POST['categoria'] : 'otro';
+
         $data = [
             'titulo' => trim($_POST['titulo'] ?? ''),
-            'categoria' => $_POST['categoria'] ?? '',
+            'categoria' => $categoria,
             'archivo_pdf' => $newFilename,
             'gestion' => (int)($_POST['gestion'] ?? 0),
             'estado' => isset($_POST['estado']) ? 1 : 0,

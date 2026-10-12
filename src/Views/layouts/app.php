@@ -110,7 +110,7 @@
                     <p class="text-[10px] font-bold uppercase tracking-wider">Institución</p>
                 </div>
                 <div class="space-y-1">
-                    <a href="/institution/identity"
+                    <a href="/institutional-info"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
                         <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             stroke-width="2">
@@ -119,26 +119,8 @@
                         </svg>
                         <span>Identidad y Textos</span>
                     </a>
-                    <a href="/institution/authorities"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>Autoridades</span>
-                    </a>
-                    <a href="/documents"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>Documentos y Reglamentos</span>
-                    </a>
 
-                    <a href="/institution/directory"
+                    <a href="/directory"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
                         <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             stroke-width="2">
@@ -169,7 +151,17 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
                         </svg>
-                        <span>Plantel Docente</span>
+                        <span>Plantel Docente y Administrativo</span>
+                    </a>
+
+                    <a href="/documents"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Documentos y Reglamentos</span>
                     </a>
 
                     <a href="/mentions"

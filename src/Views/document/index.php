@@ -4,12 +4,11 @@ $pageTitle = 'Gestión de Documentos Oficiales';
 ob_start();
 
 $categorias = [
-    'plan_estudios'        => ['label' => 'Plan de Estudios', 'class' => 'bg-blue-100 text-blue-800'],
-    'horario_clases'       => ['label' => 'Horario de Clases', 'class' => 'bg-green-100 text-green-800'],
-    'horario_labs'         => ['label' => 'Horario de Labs', 'class' => 'bg-purple-100 text-purple-800'],
-    'reglamento_titulacion'=> ['label' => 'Reglamento Titulación', 'class' => 'bg-amber-100 text-amber-800'],
-    'convocatoria'         => ['label' => 'Convocatoria', 'class' => 'bg-red-100 text-red-800'],
-    'otro'                 => ['label' => 'Otros', 'class' => 'bg-gray-100 text-gray-800'],
+    'plan_estudios'         => ['label' => 'Plan de Estudios', 'class' => 'bg-blue-100 text-blue-800'],
+    'horario_clases'        => ['label' => 'Horario de Clases', 'class' => 'bg-green-100 text-green-800'],
+    'reglamento_titulacion' => ['label' => 'Reglamento Titulación', 'class' => 'bg-amber-100 text-amber-800'],
+    'reglamento_interno'    => ['label' => 'Reglamentos Internos', 'class' => 'bg-indigo-100 text-indigo-800'],
+    'otro'                  => ['label' => 'Otro Documento', 'class' => 'bg-gray-100 text-gray-800'],
 ];
 ?>
 
