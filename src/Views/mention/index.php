@@ -34,8 +34,10 @@ ob_start();
                         <tr class="hover:bg-unsxx-blue-50/50 transition-colors">
                             <!-- Escudo -->
                             <td class="px-6 py-4 text-center">
-                                <?php $escudo = !empty($item['escudo_url']) ? $item['escudo_url'] : 'default.png'; ?>
-                                <img src="/uploads/img/menciones/<?= htmlspecialchars($escudo) ?>" alt="Escudo" class="w-12 h-12 object-contain mx-auto rounded-lg bg-gray-50 p-1 border border-gray-200">
+                                <?php $fotoIndex = !empty($item['escudo_url']) ? $item['escudo_url'] : 'default.png'; ?>
+                                <a href="/uploads/img/menciones/<?= htmlspecialchars($fotoIndex) ?>" target="_blank" class="inline-block hover:opacity-80 transition-opacity" title="Ver escudo a tamaño completo">
+                                    <img src="/uploads/img/menciones/<?= htmlspecialchars($fotoIndex) ?>" alt="Escudo" class="w-12 h-12 object-contain bg-white rounded border border-gray-200 p-0.5 mx-auto">
+                                </a>
                             </td>
                             <!-- Nombre -->
                             <td class="px-6 py-4 font-bold text-gray-900">

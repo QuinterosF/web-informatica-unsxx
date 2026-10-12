@@ -4,7 +4,7 @@ namespace App\Core;
 
 class FileUploader
 {
-    public static function uploadImage(array $file): ?string
+    public static function uploadImage(array $file, string $customFolder = ''): ?string
     {
         if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return null;
@@ -26,7 +26,9 @@ class FileUploader
         };
 
         $filename = uniqid('img_') . '.' . $extension;
-        $destinationDir = __DIR__ . '/../../public/uploads/img/';
+
+        $subFolder = !empty($customFolder) ? rtrim($customFolder, '/') . '/' : '';
+        $destinationDir = __DIR__ . '/../../public/uploads/img/' . $subFolder;
 
         if (!is_dir($destinationDir)) {
             mkdir($destinationDir, 0755, true);

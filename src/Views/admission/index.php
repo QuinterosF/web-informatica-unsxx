@@ -21,6 +21,7 @@ ob_start();
         <table id="admissionsTable" class="w-full text-sm text-left">
             <thead class="text-xs text-white uppercase bg-unsxx-blue-900">
                 <tr>
+                    <th scope="col" class="px-4 py-3 text-center rounded-tl-lg w-16">Afiche</th>
                     <th scope="col" class="px-4 py-3">Modalidad</th>
                     <th scope="col" class="px-4 py-3 text-center">Gestión</th>
                     <th scope="col" class="px-4 py-3 text-center">Estado</th>
@@ -31,9 +32,26 @@ ob_start();
                 </tr>
             </thead>
             <tbody class="divide-y divide-unsxx-blue-50">
-                <?php if (!empty($admissions)): ?>
+                <?php if (!empty($admissions)): // O el nombre de tu variable ?>
                     <?php foreach ($admissions as $item): ?>
                         <tr class="hover:bg-unsxx-blue-50/50 transition-colors">
+
+                            <!-- NUEVA CELDA: AFICHE CLICKABLE -->
+                            <td class="px-4 py-3 text-center">
+                                <?php
+                                // Verifica si el campo está vacío o es literalmente 'default.png'
+                                $fotoIndex = (!empty($item['img_adm']) && $item['img_adm'] !== 'default.png') ? $item['img_adm'] : 'default.png';
+                                ?>
+                                <a href="/uploads/img/admission/<?= htmlspecialchars($fotoIndex) ?>" target="_blank"
+                                    class="inline-block hover:opacity-80 transition-opacity shadow-sm rounded"
+                                    title="Ver afiche a tamaño completo">
+                                    <img src="/uploads/img/admission/<?= htmlspecialchars($fotoIndex) ?>"
+                                        class="w-12 h-12 object-contain bg-white rounded border border-gray-200 p-0.5"
+                                        alt="Afiche">
+                                </a>
+                            </td>
+
+                            <!-- Celda de Modalidad -->
                             <td class="px-4 py-3 text-center sm:text-left whitespace-nowrap">
                                 <?php if ($item['tipo'] === 'prueba'): ?>
                                     <span

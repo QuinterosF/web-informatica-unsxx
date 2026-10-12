@@ -19,7 +19,7 @@ ob_start();
 </div>
 
 <!-- Contenedor del Formulario -->
-<div class="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-unsxx-blue-100 overflow-hidden">
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-unsxx-blue-100 overflow-hidden">
     <div class="p-6 sm:p-8">
 
         <form action="/announcements/<?= $announcement['id_com'] ?>/edit" method="POST" enctype="multipart/form-data"
@@ -45,65 +45,92 @@ ob_start();
                         value="<?= htmlspecialchars($old['fech_com'] ?? $announcement['fech_com'] ?? '') ?>">
                 </div>
 
-                <!-- Descripción / Contenido -->
+                <!-- Descripción / Contenido (AHORA OPCIONAL) -->
                 <div>
                     <label for="desc_com" class="block text-sm font-medium text-gray-700 mb-1">Contenido del Comunicado
-                        <span class="text-red-500">*</span></label>
-                    <textarea id="desc_com" name="desc_com" required rows="5"
+                        <span class="text-xs text-gray-400 font-normal">(Opcional)</span></label>
+                    <textarea id="desc_com" name="desc_com" rows="5"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all resize-y"><?= htmlspecialchars($old['desc_com'] ?? $announcement['desc_com'] ?? '') ?></textarea>
                 </div>
 
-                <!-- Archivos Adjuntos (Grid interno 2 columnas) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <!-- SECCIÓN DE ARCHIVOS ADJUNTOS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
 
-                    <!-- Imagen de Portada -->
+                    <!-- Bloque de Imagen de Portada -->
                     <div>
-                        <label for="foto_com" class="block text-sm font-medium text-gray-700 mb-2">Imagen de
-                            Portada</label>
+                        <label class="block text-sm font-bold text-gray-800 mb-3">
+                            <i class="fas fa-image text-blue-500 mr-2"></i> Imagen de Portada
+                        </label>
 
-                        <?php if (!empty($announcement['foto_com'])): ?>
-                            <div class="mb-3 p-2 bg-white rounded border border-gray-200 flex items-center justify-between">
-                                <span class="text-xs text-unsxx-blue-800 truncate max-w-[150px]"
-                                    title="<?= htmlspecialchars($announcement['foto_com']) ?>">
-                                    <svg class="w-4 h-4 inline mr-1 text-green-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                    <?= htmlspecialchars($announcement['foto_com']) ?>
-                                </span>
+                        <?php
+                        $fotoCom = !empty($announcement['foto_com']) ? $announcement['foto_com'] : 'default.png';
+                        $isDefault = empty($announcement['foto_com']);
+                        ?>
+                        <div class="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                            <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Imagen Actual
+                                <?= $isDefault ? '(Por Defecto)' : '' ?>:</p>
+                            <div class="flex items-start gap-4">
+                                <img src="/uploads/img/comunicados/<?= htmlspecialchars($fotoCom) ?>" alt="Portada"
+                                    class="w-24 h-24 object-cover rounded shadow-sm border border-gray-200 bg-gray-100">
+                                <div class="flex flex-col justify-between py-1">
+                                    <a href="/uploads/img/comunicados/<?= htmlspecialchars($fotoCom) ?>" target="_blank"
+                                        class="text-sm text-blue-600 hover:underline font-medium break-all line-clamp-2">
+                                        Ver imagen <?= $isDefault ? 'por defecto' : 'original' ?>
+                                    </a>
+
+                                    <?php if (!$isDefault): // Solo mostramos el botón de borrar si NO es la imagen por defecto ?>
+                                        <label class="inline-flex items-center mt-3 cursor-pointer group">
+                                            <input type="checkbox" name="remove_foto_com" value="1"
+                                                class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer">
+                                            <span
+                                                class="ml-2 text-xs font-semibold text-red-600 group-hover:text-red-800 transition-colors">Eliminar
+                                                imagen actual</span>
+                                        </label>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                        <?php endif; ?>
+                        </div>
 
-                        <input type="file" id="foto_com" name="foto_com" accept="image/*"
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-unsxx-blue-50 file:text-unsxx-blue-700 hover:file:bg-unsxx-blue-100 transition-all border border-gray-300 rounded-lg bg-white">
-                        <p class="text-xs text-gray-500 mt-1">Subir nueva para reemplazar</p>
+                        <label for="foto_com" class="block text-xs font-medium text-gray-600 mb-1">Subir nueva imagen
+                            (JPG, PNG, WebP):</label>
+                        <input type="file" id="foto_com" name="foto_com" accept="image/jpeg, image/png, image/webp"
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg bg-white transition-all cursor-pointer">
                     </div>
 
-                    <!-- Documento PDF -->
+                    <!-- Bloque de Documento PDF -->
                     <div>
-                        <label for="doc_com" class="block text-sm font-medium text-gray-700 mb-2">Documento Adjunto
-                            (PDF)</label>
+                        <label class="block text-sm font-bold text-gray-800 mb-3">
+                            <i class="fas fa-file-pdf text-red-500 mr-2"></i> Documento Adjunto (PDF)
+                        </label>
 
                         <?php if (!empty($announcement['doc_com'])): ?>
-                            <div class="mb-3 p-2 bg-white rounded border border-gray-200 flex items-center justify-between">
-                                <span class="text-xs text-unsxx-blue-800 truncate max-w-[150px]"
-                                    title="<?= htmlspecialchars($announcement['doc_com']) ?>">
-                                    <svg class="w-4 h-4 inline mr-1 text-red-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                    <?= htmlspecialchars($announcement['doc_com']) ?>
-                                </span>
+                            <div class="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                                <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Documento
+                                    Actual:</p>
+                                <div class="flex items-center gap-3 bg-red-50 p-3 rounded border border-red-100">
+                                    <i class="fas fa-file-pdf text-2xl text-red-500"></i>
+                                    <div class="flex-1 min-w-0">
+                                        <a href="/uploads/pdf/comunicados/<?= htmlspecialchars($announcement['doc_com']) ?>"
+                                            target="_blank"
+                                            class="text-sm font-semibold text-red-700 hover:underline truncate block">
+                                            <?= htmlspecialchars($announcement['doc_com']) ?>
+                                        </a>
+                                    </div>
+                                </div>
+                                <label class="inline-flex items-center mt-3 cursor-pointer group px-1">
+                                    <input type="checkbox" name="remove_doc_com" value="1"
+                                        class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer">
+                                    <span
+                                        class="ml-2 text-xs font-semibold text-red-600 group-hover:text-red-800 transition-colors">Eliminar
+                                        PDF actual</span>
+                                </label>
                             </div>
                         <?php endif; ?>
 
+                        <label for="doc_com" class="block text-xs font-medium text-gray-600 mb-1">Subir nuevo PDF para
+                            reemplazar:</label>
                         <input type="file" id="doc_com" name="doc_com" accept="application/pdf"
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-unsxx-blue-50 file:text-unsxx-blue-700 hover:file:bg-unsxx-blue-100 transition-all border border-gray-300 rounded-lg bg-white">
-                        <p class="text-xs text-gray-500 mt-1">Subir nuevo para reemplazar</p>
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 border border-gray-300 rounded-lg bg-white transition-all cursor-pointer">
                     </div>
                 </div>
 
@@ -137,6 +164,7 @@ ob_start();
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <?php
 $content = ob_get_clean();
 require __DIR__ . '/../layouts/app.php';

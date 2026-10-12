@@ -158,56 +158,31 @@ class MentionController extends Controller
             'estado' => isset($_POST['estado']) ? 1 : 0,
         ];
 
-        $oldFilename = $existing['escudo_url'] ?? 'default.png';
-        $uploadedFilename = null;
+        $escudoUrl = $existing['escudo_url'] ?? '';
+        $removeEscudo = isset($_POST['remove_escudo_url']) && $_POST['remove_escudo_url'] === '1';
 
-        // 1. ¿El usuario marcó el checkbox de eliminar el escudo?
-        if (isset($_POST['remove_escudo']) && $_POST['remove_escudo'] === '1') {
-            if ($oldFilename !== 'default.png') {
-                $this->deleteShield($oldFilename);
-            }
-            $data['escudo_url'] = 'default.png';
-        }
-        // 2. ¿El usuario subió un nuevo escudo?
-        elseif (isset($_FILES['escudo_url']) && $_FILES['escudo_url']['error'] !== UPLOAD_ERR_NO_FILE) {
-            if ($_FILES['escudo_url']['error'] === UPLOAD_ERR_OK) {
-                try {
-                    $uploadedFilename = $this->uploadShield($_FILES['escudo_url']);
-                    $data['escudo_url'] = $uploadedFilename;
-
-                    // Borrar el escudo anterior si no era default
-                    if ($oldFilename !== 'default.png') {
-                        $this->deleteShield($oldFilename);
-                    }
-                } catch (\Exception $e) {
-                    $coordinators = $this->academicModel->getCoordinators();
-                    $_SESSION['error'] = $e->getMessage();
-                    $this->view('mention/edit', [
-                        'mention' => $existing,
-                        'coordinators' => $coordinators,
-                        'title' => 'Editar Mención / Instituto',
-                        'pageTitle' => 'Editar Mención / Instituto',
-                        'old' => $data
-                    ]);
-                    return;
-                }
+        if (isset($_FILES['escudo_url']) && $_FILES['escudo_url']['error'] === UPLOAD_ERR_OK) {
+            $uploaded = \App\Core\FileUploader::uploadImage($_FILES['escudo_url'], 'menciones');
+            if ($uploaded) {
+                if ($escudoUrl) \App\Core\FileUploader::delete($escudoUrl, 'img/menciones');
+                $escudoUrl = $uploaded;
             } else {
                 $coordinators = $this->academicModel->getCoordinators();
-                $_SESSION['error'] = 'Error al subir el archivo: ' . $_FILES['escudo_url']['error'];
+                $_SESSION['error'] = 'Archivo de imagen inválido. Solo se permiten JPG, PNG, WebP.';
                 $this->view('mention/edit', [
                     'mention' => $existing,
                     'coordinators' => $coordinators,
                     'title' => 'Editar Mención / Instituto',
                     'pageTitle' => 'Editar Mención / Instituto',
-                    'old' => $data
+                    'old' => $_POST
                 ]);
                 return;
             }
+        } elseif ($removeEscudo) {
+            if ($escudoUrl) \App\Core\FileUploader::delete($escudoUrl, 'img/menciones');
+            $escudoUrl = null;
         }
-        // 3. No tocó nada, mantener el actual
-        else {
-            $data['escudo_url'] = $oldFilename;
-        }
+        $data['escudo_url'] = $escudoUrl;
 
         try {
             $this->model->update($id, $data);
@@ -215,19 +190,14 @@ class MentionController extends Controller
             header('Location: /mentions');
             exit;
         } catch (\Exception $e) {
-            // Rollback: si se subió escudo nuevo y falla la BD, borrar el nuevo
-            if ($uploadedFilename) {
-                $this->deleteShield($uploadedFilename);
-            }
-            $mention = $this->model->findById($id);
-            $coordinators = $this->academicModel->getCoordinators();
             $_SESSION['error'] = $e->getMessage();
+            $coordinators = $this->academicModel->getCoordinators();
             $this->view('mention/edit', [
-                'mention' => $mention,
+                'mention' => $existing,
                 'coordinators' => $coordinators,
                 'title' => 'Editar Mención / Instituto',
                 'pageTitle' => 'Editar Mención / Instituto',
-                'old' => $data
+                'old' => $_POST
             ]);
         }
     }

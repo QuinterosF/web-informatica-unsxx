@@ -59,7 +59,17 @@ class AdmissionController extends Controller
 
         try {
             if (isset($_FILES['img_adm']) && $_FILES['img_adm']['error'] === UPLOAD_ERR_OK) {
-                $data['img_adm'] = $this->uploadPoster($_FILES['img_adm']);
+                $uploaded = \App\Core\FileUploader::uploadImage($_FILES['img_adm'], 'admission');
+                if (!$uploaded) {
+                    $_SESSION['error'] = 'Archivo de imagen inválido. Solo se permiten JPG, PNG, WebP.';
+                    $this->view('admission/create', [
+                        'title' => 'Nueva Admisión',
+                        'pageTitle' => 'Nueva Admisión',
+                        'old' => $_POST
+                    ]);
+                    return;
+                }
+                $data['img_adm'] = $uploaded;
             }
 
             $id = $this->model->create($data);
@@ -69,7 +79,7 @@ class AdmissionController extends Controller
 
         } catch (\Exception $e) {
             if (isset($data['img_adm']) && $data['img_adm'] !== 'default.png') {
-                $this->deletePoster($data['img_adm']);
+                \App\Core\FileUploader::delete($data['img_adm'], 'img/admission');
             }
             $_SESSION['error'] = $e->getMessage();
             $this->view('admission/create', [
@@ -122,38 +132,43 @@ class AdmissionController extends Controller
             'actualizado_por' => (int)($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1),
         ];
 
-        $oldFilename = $existing['img_adm'] ?? 'default.png';
+        $imgAdm = $existing['img_adm'] ?: 'default.png';
+        $removeAfiche = isset($_POST['remove_img_adm']) && $_POST['remove_img_adm'] === '1';
+
+        if (isset($_FILES['img_adm']) && $_FILES['img_adm']['error'] === UPLOAD_ERR_OK) {
+            $uploaded = \App\Core\FileUploader::uploadImage($_FILES['img_adm'], 'admission');
+            if ($uploaded) {
+                // Candado de seguridad: Jamás borrar default.png
+                if ($imgAdm && $imgAdm !== 'default.png') {
+                    \App\Core\FileUploader::delete($imgAdm, 'img/admission');
+                }
+                $imgAdm = $uploaded;
+            } else {
+                $_SESSION['error'] = 'Archivo de imagen inválido. Solo se permiten JPG, PNG, WebP.';
+                $this->view('admission/edit', [
+                    'admission' => $existing,
+                    'title' => 'Editar Admisión',
+                    'pageTitle' => 'Editar Admisión',
+                    'old' => $_POST
+                ]);
+                return;
+            }
+        } elseif ($removeAfiche) {
+            // Candado de seguridad
+            if ($imgAdm && $imgAdm !== 'default.png') {
+                \App\Core\FileUploader::delete($imgAdm, 'img/admission');
+            }
+            $imgAdm = 'default.png'; // Guardamos explícitamente el texto
+        }
+
+        $data['img_adm'] = $imgAdm;
 
         try {
-            // 1. ¿El usuario marcó el checkbox de eliminar la imagen?
-            if (isset($_POST['remove_image']) && $_POST['remove_image'] === '1') {
-                if ($oldFilename !== 'default.png' && !empty($oldFilename)) {
-                    $this->deletePoster($oldFilename);
-                }
-                $data['img_adm'] = 'default.png';
-            }
-            // 2. ¿El usuario subió una nueva imagen?
-            elseif (isset($_FILES['img_adm']) && $_FILES['img_adm']['error'] === UPLOAD_ERR_OK) {
-                $data['img_adm'] = $this->uploadPoster($_FILES['img_adm']);
-                
-                if ($oldFilename !== 'default.png' && !empty($oldFilename)) {
-                    $this->deletePoster($oldFilename);
-                }
-            } 
-            // 3. No tocó nada, mantener la actual
-            else {
-                $data['img_adm'] = $oldFilename;
-            }
-
             $this->model->update($id, $data);
             $_SESSION['success'] = 'Admisión actualizada correctamente';
             header('Location: /admissions');
             exit;
-
         } catch (\Exception $e) {
-            if (isset($data['img_adm']) && $data['img_adm'] !== $oldFilename && $data['img_adm'] !== 'default.png') {
-                $this->deletePoster($data['img_adm']);
-            }
             $_SESSION['error'] = $e->getMessage();
             $this->view('admission/edit', [
                 'admission' => $existing, 'title' => 'Editar Admisión', 'pageTitle' => 'Editar Admisión', 'old' => $_POST
@@ -173,9 +188,9 @@ class AdmissionController extends Controller
             $deleted = $this->model->delete($id);
 
             if ($deleted) {
-                // Borrar archivo físico asociado si existe
-                if ($existing && $existing['img_adm']) {
-                    $this->deletePoster($existing['img_adm']);
+                // Borrar archivo físico asociado si existe y no es default.png
+                if ($existing && $existing['img_adm'] && $existing['img_adm'] !== 'default.png') {
+                    \App\Core\FileUploader::delete($existing['img_adm'], 'img/admission');
                 }
                 $_SESSION['success'] = 'Admisión eliminada correctamente';
             } else {
@@ -191,34 +206,17 @@ class AdmissionController extends Controller
 
     /**
      * Sube el afiche de admisión (OPCIONAL)
-     * Valida MIME type, genera UUID, guarda en public/uploads/img/admission/
+     * Usa FileUploader para consistencia
      *
      * @throws \Exception si validación falla
      */
     private function uploadPoster(array $file): string
     {
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mime = $finfo->file($file['tmp_name']);
-        $allowed = ['image/jpeg', 'image/png', 'image/webp'];
-
-        if (!in_array($mime, $allowed, true)) {
+        $uploaded = \App\Core\FileUploader::uploadImage($file, 'admission');
+        if (!$uploaded) {
             throw new \Exception('Formato de afiche no permitido. Solo se admiten JPG, PNG o WebP.');
         }
-
-        $ext = match ($mime) {
-            'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', default => 'jpg'
-        };
-
-        $filename = bin2hex(random_bytes(16)) . '.' . $ext;
-        $uploadPath = dirname(__DIR__, 2) . '/public/uploads/img/admission/';
-
-        if (!is_dir($uploadPath)) mkdir($uploadPath, 0755, true);
-
-        if (!move_uploaded_file($file['tmp_name'], $uploadPath . $filename)) {
-            throw new \Exception('Error al guardar el afiche.');
-        }
-
-        return $filename;
+        return $uploaded;
     }
 
     /**
@@ -226,9 +224,6 @@ class AdmissionController extends Controller
      */
     private function deletePoster(string $filename): void
     {
-        $filepath = dirname(__DIR__, 2) . '/public/uploads/img/admission/' . $filename;
-        if (file_exists($filepath)) {
-            unlink($filepath);
-        }
+        \App\Core\FileUploader::delete($filename, 'img/admission');
     }
 }

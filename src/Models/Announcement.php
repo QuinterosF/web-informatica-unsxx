@@ -60,7 +60,7 @@ class Announcement
     public function create(array $data): int
     {
         // Validaciones
-        $required = ['nom_com', 'fech_com', 'desc_com', 'publicado_por'];
+        $required = ['nom_com', 'fech_com', 'publicado_por'];
         foreach ($required as $field) {
             if (empty($data[$field])) {
                 throw new \Exception("El campo {$field} es requerido");
@@ -78,16 +78,9 @@ class Announcement
             throw new \Exception("El estado debe ser 0 (borrador) o 1 (publicado)");
         }
 
-        // Manejar doc_com y foto_com (solo guardar nombre del archivo si viene en $_FILES)
-        $docCom = $data['doc_com'] ?? '';
-        $fotoCom = $data['foto_com'] ?? '';
-        
-        if (isset($data['doc_com_file']) && $data['doc_com_file'] !== null) {
-            $docCom = $data['doc_com_file']['name'];
-        }
-        if (isset($data['foto_com_file']) && $data['foto_com_file'] !== null) {
-            $fotoCom = $data['foto_com_file']['name'];
-        }
+        // Usar directamente los valores que vienen del controlador (ya procesados por FileUploader)
+        $docCom = $data['doc_com'] ?? null;
+        $fotoCom = $data['foto_com'] ?? null;
 
         $sql = "
             INSERT INTO comunicado (nom_com, fech_com, desc_com, doc_com, foto_com, publicado_por, estado)
@@ -119,7 +112,7 @@ class Announcement
         }
 
         // Validaciones
-        $required = ['nom_com', 'fech_com', 'desc_com'];
+        $required = ['nom_com', 'fech_com'];
         foreach ($required as $field) {
             if (empty($data[$field])) {
                 throw new \Exception("El campo {$field} es requerido");
@@ -137,16 +130,10 @@ class Announcement
             throw new \Exception("El estado debe ser 0 (borrador) o 1 (publicado)");
         }
 
-        // Manejar doc_com y foto_com (solo guardar nombre del archivo si viene en $_FILES)
-        $docCom = $existing['doc_com'] ?? '';
-        $fotoCom = $existing['foto_com'] ?? '';
-        
-        if (isset($data['doc_com_file']) && $data['doc_com_file'] !== null) {
-            $docCom = $data['doc_com_file']['name'];
-        }
-        if (isset($data['foto_com_file']) && $data['foto_com_file'] !== null) {
-            $fotoCom = $data['foto_com_file']['name'];
-        }
+        // Usar directamente los valores que vienen del controlador (ya procesados por FileUploader)
+        // Si no vienen en $data, mantener los existentes
+        $docCom = $data['doc_com'] ?? $existing['doc_com'] ?? null;
+        $fotoCom = $data['foto_com'] ?? $existing['foto_com'] ?? null;
 
         $sql = "
             UPDATE comunicado 

@@ -77,7 +77,7 @@ class Admission
             throw new \Exception("La gestión debe ser un año válido");
         }
 
-        $imgAdm = !empty($data['img_adm']) ? $data['img_adm'] : 'default.png';
+        $imgAdm = $data['img_adm'] ?? null;
 
         $sql = "
             INSERT INTO admision (proc_adm, req_adm, img_adm, tipo, actualizado_por, gestion, estado)
@@ -123,7 +123,7 @@ class Admission
             throw new \Exception("La gestión debe ser un año válido");
         }
 
-        $imgAdm = $data['img_adm'] ?? $existing['img_adm'];
+        $imgAdm = array_key_exists('img_adm', $data) ? $data['img_adm'] : ($existing['img_adm'] ?? null);
 
         $sql = "
             UPDATE admision 

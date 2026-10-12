@@ -144,15 +144,34 @@ class AcademicController extends Controller
                 throw new \Exception("El docente no existe");
             }
 
-            // Manejar archivo de foto opcional
+            // --- Manejar foto_acad (imagen de perfil) con FileUploader ---
+            $fotoAcad = $academic['foto_acad'] ?? '';
+            $removeFoto = isset($_POST['remove_foto_acad']) && $_POST['remove_foto_acad'] === '1';
+
             if (isset($_FILES['foto_acad']) && $_FILES['foto_acad']['error'] === UPLOAD_ERR_OK) {
-                $data['foto_acad'] = $this->uploadPhoto($_FILES['foto_acad']);
-                
-                // Borrar foto anterior si existe y no es la por defecto
-                if (!empty($academic['foto_acad']) && $academic['foto_acad'] !== 'default.png') {
-                    $this->deletePhoto($academic['foto_acad']);
+                // Prioridad: subida de nuevo archivo
+                $uploaded = \App\Core\FileUploader::uploadImage($_FILES['foto_acad'], 'academic');
+                if ($uploaded) {
+                    if ($fotoAcad) \App\Core\FileUploader::delete($fotoAcad, 'img/academic');
+                    $fotoAcad = $uploaded;
+                } else {
+                    $categories = $this->model->getCategories();
+                    $_SESSION['error'] = 'Archivo de imagen inválido. Solo se permiten JPG, PNG, WebP.';
+                    $this->view('academic/edit', [
+                        'academic' => $academic,
+                        'categories' => $categories,
+                        'title' => 'Editar Docente y Administrativo',
+                        'pageTitle' => 'Editar Docente y Administrativo',
+                        'old' => $_POST
+                    ]);
+                    return;
                 }
+            } elseif ($removeFoto) {
+                // Checkbox de eliminar marcado y NO hay archivo nuevo
+                if ($fotoAcad) \App\Core\FileUploader::delete($fotoAcad, 'img/academic');
+                $fotoAcad = null;
             }
+            $data['foto_acad'] = $fotoAcad;
 
             $this->model->update($id, $data);
             $_SESSION['success'] = 'Docente actualizado correctamente';

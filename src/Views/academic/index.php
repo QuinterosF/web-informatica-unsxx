@@ -47,15 +47,18 @@ ob_start();
                     <?php foreach ($academics as $academic): ?>
                         <tr class="hover:bg-unsxx-blue-50/50 transition-colors">
                             <td class="px-4 py-3">
-                                <div
-                                    class="w-10 h-10 rounded-full bg-unsxx-blue-100 flex items-center justify-center text-unsxx-blue-700 font-bold overflow-hidden border border-unsxx-blue-200">
-                                    <?php if (!empty($academic['foto_acad']) && $academic['foto_acad'] !== 'default.png'): ?>
-                                        <img src="/uploads/img/academic/<?= htmlspecialchars($academic['foto_acad']) ?>" alt="Foto"
-                                            class="w-full h-full object-cover">
-                                    <?php else: ?>
-                                        <?= substr(htmlspecialchars($academic['nom_acad']), 0, 1) ?>
-                                    <?php endif; ?>
-                                </div>
+                                <?php $fotoIndex = !empty($academic['foto_acad']) ? $academic['foto_acad'] : 'default.png'; ?>
+                                <a href="/uploads/img/academic/<?= htmlspecialchars($fotoIndex) ?>" target="_blank" class="block hover:opacity-80 transition-opacity" title="Ver foto a tamaño completo">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-unsxx-blue-100 flex items-center justify-center text-unsxx-blue-700 font-bold overflow-hidden border border-unsxx-blue-200">
+                                        <?php if (!empty($academic['foto_acad']) && $academic['foto_acad'] !== 'default.png'): ?>
+                                            <img src="/uploads/img/academic/<?= htmlspecialchars($academic['foto_acad']) ?>" alt="Foto"
+                                                class="w-full h-full object-cover">
+                                        <?php else: ?>
+                                            <?= substr(htmlspecialchars($academic['nom_acad']), 0, 1) ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </a>
                             </td>
                             <td class="px-4 py-3 font-medium text-gray-900">
                                 <?= htmlspecialchars($academic['nom_acad']) ?>

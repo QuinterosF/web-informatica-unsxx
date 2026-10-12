@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\FileUploader;
 use App\Models\Announcement;
 
 class AnnouncementController extends Controller
@@ -54,12 +55,38 @@ class AnnouncementController extends Controller
             'estado' => isset($_POST['estado']) ? 1 : 0,
         ];
 
-        // Manejar doc_com y foto_com (solo guardar nombre del archivo si viene en $_FILES)
-        if (isset($_FILES['doc_com']) && $_FILES['doc_com']['error'] === UPLOAD_ERR_OK) {
-            $data['doc_com_file'] = $_FILES['doc_com'];
-        }
+        // --- Manejar foto_com (imagen de portada) ---
         if (isset($_FILES['foto_com']) && $_FILES['foto_com']['error'] === UPLOAD_ERR_OK) {
-            $data['foto_com_file'] = $_FILES['foto_com'];
+            $uploaded = FileUploader::uploadImage($_FILES['foto_com'], 'comunicados');
+            if (!$uploaded) {
+                $_SESSION['error'] = 'Archivo de imagen inválido. Solo se permiten JPG, PNG, WebP.';
+                $this->view('announcement/create', [
+                    'title' => 'Nuevo Comunicado',
+                    'pageTitle' => 'Nuevo Comunicado',
+                    'old' => $_POST
+                ]);
+                return;
+            }
+            $data['foto_com'] = $uploaded;
+        }
+
+        // --- Manejar doc_com (documento PDF) ---
+        if (isset($_FILES['doc_com']) && $_FILES['doc_com']['error'] === UPLOAD_ERR_OK) {
+            $uploaded = FileUploader::uploadPdf($_FILES['doc_com'], 'comunicados');
+            if (!$uploaded) {
+                // Si falla la subida del PDF, limpiar imagen si se subió
+                if (isset($data['foto_com'])) {
+                    FileUploader::delete($data['foto_com'], 'img/comunicados');
+                }
+                $_SESSION['error'] = 'Archivo PDF inválido. Solo se permiten archivos PDF.';
+                $this->view('announcement/create', [
+                    'title' => 'Nuevo Comunicado',
+                    'pageTitle' => 'Nuevo Comunicado',
+                    'old' => $_POST
+                ]);
+                return;
+            }
+            $data['doc_com'] = $uploaded;
         }
 
         try {
@@ -68,11 +95,18 @@ class AnnouncementController extends Controller
             header('Location: /announcements');
             exit;
         } catch (\Exception $e) {
+            // Rollback: eliminar archivos subidos si falla la BD
+            if (isset($data['foto_com'])) {
+                FileUploader::delete($data['foto_com'], 'img/comunicados');
+            }
+            if (isset($data['doc_com'])) {
+                FileUploader::delete($data['doc_com'], 'pdf/comunicados');
+            }
             $_SESSION['error'] = $e->getMessage();
             $this->view('announcement/create', [
                 'title' => 'Nuevo Comunicado',
                 'pageTitle' => 'Nuevo Comunicado',
-                'old' => $data
+                'old' => $_POST
             ]);
         }
     }
@@ -104,6 +138,15 @@ class AnnouncementController extends Controller
      */
     public function update(int $id): void
     {
+        // Obtener el comunicado existente primero para acceder a los archivos actuales
+        $existing = $this->model->findById($id);
+
+        if (!$existing) {
+            $_SESSION['error'] = 'Comunicado no encontrado';
+            header('Location: /announcements');
+            exit;
+        }
+
         $data = [
             'nom_com' => trim($_POST['nom_com'] ?? ''),
             'fech_com' => trim($_POST['fech_com'] ?? ''),
@@ -111,13 +154,71 @@ class AnnouncementController extends Controller
             'estado' => isset($_POST['estado']) ? 1 : 0,
         ];
 
-        // Manejar doc_com y foto_com (solo guardar nombre original por ahora)
-        if (isset($_FILES['doc_com']) && $_FILES['doc_com']['error'] === UPLOAD_ERR_OK) {
-            $data['doc_com_file'] = $_FILES['doc_com'];
+        $fotoCom = $existing['foto_com'] ?? '';
+        $docCom = $existing['doc_com'] ?? '';
+
+        // --- Manejar foto_com (imagen de portada) ---
+        $fotoUploaded = isset($_FILES['foto_com']) && $_FILES['foto_com']['error'] === UPLOAD_ERR_OK;
+        $removeFoto = isset($_POST['remove_foto_com']) && $_POST['remove_foto_com'] === '1';
+
+        if ($fotoUploaded) {
+            // Prioridad: subida de nuevo archivo
+            $uploaded = FileUploader::uploadImage($_FILES['foto_com'], 'comunicados');
+            if (!$uploaded) {
+                $_SESSION['error'] = 'Archivo de imagen inválido. Solo se permiten JPG, PNG, WebP.';
+                $this->view('announcement/edit', [
+                    'announcement' => $existing,
+                    'title' => 'Editar Comunicado',
+                    'pageTitle' => 'Editar Comunicado',
+                    'old' => $_POST
+                ]);
+                return;
+            }
+            // Borrar archivo anterior si existe
+            if ($fotoCom) {
+                FileUploader::delete($fotoCom, 'img/comunicados');
+            }
+            $fotoCom = $uploaded;
+        } elseif ($removeFoto) {
+            // Checkbox de eliminar marcado y NO hay archivo nuevo
+            if ($fotoCom) {
+                FileUploader::delete($fotoCom, 'img/comunicados');
+            }
+            $fotoCom = '';
         }
-        if (isset($_FILES['foto_com']) && $_FILES['foto_com']['error'] === UPLOAD_ERR_OK) {
-            $data['foto_com_file'] = $_FILES['foto_com'];
+
+        // --- Manejar doc_com (documento PDF) ---
+        $docUploaded = isset($_FILES['doc_com']) && $_FILES['doc_com']['error'] === UPLOAD_ERR_OK;
+        $removeDoc = isset($_POST['remove_doc_com']) && $_POST['remove_doc_com'] === '1';
+
+        if ($docUploaded) {
+            // Prioridad: subida de nuevo archivo
+            $uploaded = FileUploader::uploadPdf($_FILES['doc_com'], 'comunicados');
+            if (!$uploaded) {
+                $_SESSION['error'] = 'Archivo PDF inválido. Solo se permiten archivos PDF.';
+                $this->view('announcement/edit', [
+                    'announcement' => $existing,
+                    'title' => 'Editar Comunicado',
+                    'pageTitle' => 'Editar Comunicado',
+                    'old' => $_POST
+                ]);
+                return;
+            }
+            // Borrar archivo anterior si existe
+            if ($docCom) {
+                FileUploader::delete($docCom, 'pdf/comunicados');
+            }
+            $docCom = $uploaded;
+        } elseif ($removeDoc) {
+            // Checkbox de eliminar marcado y NO hay archivo nuevo
+            if ($docCom) {
+                FileUploader::delete($docCom, 'pdf/comunicados');
+            }
+            $docCom = '';
         }
+
+        $data['foto_com'] = $fotoCom;
+        $data['doc_com'] = $docCom;
 
         try {
             $this->model->update($id, $data);
@@ -125,13 +226,12 @@ class AnnouncementController extends Controller
             header('Location: /announcements');
             exit;
         } catch (\Exception $e) {
-            $announcement = $this->model->findById($id);
             $_SESSION['error'] = $e->getMessage();
             $this->view('announcement/edit', [
-                'announcement' => $announcement,
+                'announcement' => $existing,
                 'title' => 'Editar Comunicado',
                 'pageTitle' => 'Editar Comunicado',
-                'old' => $data
+                'old' => $_POST
             ]);
         }
     }

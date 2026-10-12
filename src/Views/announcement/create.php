@@ -47,8 +47,8 @@ ob_start();
                 <!-- Descripción / Contenido -->
                 <div>
                     <label for="desc_com" class="block text-sm font-medium text-gray-700 mb-1">Contenido del Comunicado
-                        <span class="text-red-500">*</span></label>
-                    <textarea id="desc_com" name="desc_com" required rows="5"
+                        <span class="text-xs text-gray-400 font-normal">(Opcional)</span></label>
+                    <textarea id="desc_com" name="desc_com" rows="5"
                         placeholder="Escriba el detalle del comunicado aquí..."
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all resize-y"><?= htmlspecialchars($old['desc_com'] ?? '') ?></textarea>
                 </div>

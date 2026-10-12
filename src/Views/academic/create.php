@@ -94,9 +94,9 @@ ob_start();
 
             <!-- Foto -->
             <div>
-                <label for="foto_acad" class="block text-sm font-medium text-gray-700 mb-1">Foto de perfil</label>
+                <label for="foto_acad" class="block text-sm font-medium text-gray-700 mb-1">Foto de perfil <span class="text-red-500">*</span></label>
                 <div class="flex items-center gap-4">
-                    <input type="file" id="foto_acad" name="foto_acad" accept="image/jpeg, image/png"
+                    <input type="file" id="foto_acad" name="foto_acad" accept="image/jpeg, image/png" required
                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-unsxx-blue-50 file:text-unsxx-blue-700 hover:file:bg-unsxx-blue-100 transition-all border border-gray-300 rounded-lg">
                     <span class="text-xs text-gray-500 w-full max-w-[200px]">JPG, PNG máx. 2MB</span>
                 </div>
@@ -105,8 +105,8 @@ ob_start();
             <!-- Descripción -->
             <div>
                 <label for="desc_acad" class="block text-sm font-medium text-gray-700 mb-1">Descripción /
-                    Currículum</label>
-                <textarea id="desc_acad" name="desc_acad" rows="4"
+                    Currículum <span class="text-red-500">*</span></label>
+                <textarea id="desc_acad" name="desc_acad" required rows="4"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all resize-y"><?= htmlspecialchars($old['desc_acad'] ?? '') ?></textarea>
             </div>
 

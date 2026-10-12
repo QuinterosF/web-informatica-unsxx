@@ -82,33 +82,48 @@ ob_start();
             </div>
 
                 <!-- Imagen / Afiche Oficial -->
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-                    <label for="img_adm" class="block text-sm font-semibold text-gray-700 mb-2">Imagen / Afiche Oficial</label>
+                <div>
+                    <label class="block text-sm font-bold text-gray-800 mb-3">
+                        <i class="fas fa-image text-blue-500 mr-2"></i> Afiche Promocional
+                    </label>
                     
-                    <!-- Mostrar archivo actual y checkbox de borrado si no es default -->
-                    <?php if (!empty($admission['img_adm']) && $admission['img_adm'] !== 'default.png'): ?>
-                        <div class="mb-4 flex items-center justify-between bg-white p-3 rounded border border-gray-200">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span class="text-sm text-gray-600 truncate"><?= htmlspecialchars($admission['img_adm']) ?></span>
+                    <?php 
+                    // 1. Asignamos la imagen (si no hay, usamos default.png)
+                    $fotoAfiche = !empty($admission['img_adm']) ? $admission['img_adm'] : 'default.png';
+                    
+                    // 2. NUEVA CONDICIÓN: Es default si está vacío O si literalmente dice 'default.png'
+                    $isDefault = empty($admission['img_adm']) || $admission['img_adm'] === 'default.png';
+                    ?>
+                    
+                    <div class="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                            AFICHE ACTUAL <?= $isDefault ? '(POR DEFECTO)' : '' ?>:
+                        </p>
+                        <div class="flex items-start gap-4">
+                            <img src="/uploads/img/admission/<?= htmlspecialchars($fotoAfiche) ?>" alt="Afiche" class="w-24 h-24 object-contain rounded shadow-sm border border-gray-200 bg-gray-50 p-1">
+                            <div class="flex flex-col justify-between py-1">
+                                <a href="/uploads/img/admission/<?= htmlspecialchars($fotoAfiche) ?>" target="_blank" class="text-sm text-blue-600 hover:underline font-medium break-all line-clamp-2">
+                                    Ver afiche <?= $isDefault ? 'por defecto' : 'original' ?>
+                                </a>
+                                
+                                <?php if (!$isDefault): ?>
+                                <!-- Si es una imagen real, mostramos el checkbox para eliminar -->
+                                <label class="inline-flex items-center mt-3 cursor-pointer group">
+                                    <input type="checkbox" name="remove_img_adm" value="1" class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer">
+                                    <span class="ml-2 text-xs font-semibold text-red-600 group-hover:text-red-800 transition-colors">Eliminar afiche actual</span>
+                                </label>
+                                <?php else: ?>
+                                <!-- Si es default.png, mostramos un badge amigable sin opción de eliminar -->
+                                <span class="inline-flex items-center mt-3 text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200 w-max">
+                                    <i class="fas fa-info-circle mr-1.5 text-blue-500"></i> Imagen por defecto
+                                </span>
+                                <?php endif; ?>
                             </div>
-                            <a href="/uploads/img/admission/<?= htmlspecialchars($admission['img_adm']) ?>" target="_blank" class="text-sm text-blue-600 hover:underline">Ver actual</a>
                         </div>
-                        
-                        <div class="mb-4 flex items-center p-2 rounded bg-red-50 border border-red-100">
-                            <input type="checkbox" id="remove_image" name="remove_image" value="1" 
-                                class="w-4 h-4 text-red-600 bg-white border-gray-300 rounded focus:ring-red-500 focus:ring-2 cursor-pointer">
-                            <label for="remove_image" class="ml-2 text-sm font-medium text-red-700 cursor-pointer hover:text-red-900">
-                                Eliminar afiche actual (volver a imagen por defecto)
-                            </label>
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="flex items-center gap-4">
-                        <input type="file" id="img_adm" name="img_adm" accept="image/jpeg, image/png, image/webp" 
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-unsxx-blue-50 file:text-unsxx-blue-700 hover:file:bg-unsxx-blue-100 transition-all border border-gray-300 rounded-lg bg-white">
                     </div>
-                    <p class="text-xs text-gray-500 mt-2">Sube un archivo solo si deseas agregar o reemplazar el afiche (Opcional).</p>
+                    
+                    <label for="img_adm" class="block text-xs font-medium text-gray-600 mb-1">Subir nuevo afiche (JPG, PNG):</label>
+                    <input type="file" id="img_adm" name="img_adm" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg bg-white transition-all cursor-pointer">
                 </div>
 
             </div>
