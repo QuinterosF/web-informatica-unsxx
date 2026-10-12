@@ -45,7 +45,7 @@ class Academic
             ORDER BY a.nom_acad ASC
         ";
         $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
