@@ -163,6 +163,7 @@ $router->post('/directory/links/{id}/delete', [ServiceLinkController::class, 'de
 /* ==================== PORTADAS DE INICIO (CARRUSEL) ==================== */
 $router->get('/portadas', [PortadaController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/portadas', [PortadaController::class, 'upload'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/portadas/batch-update', [PortadaController::class, 'saveBatch'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/portadas/{id}/update', [PortadaController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/portadas/{id}/delete', [PortadaController::class, 'delete'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/portadas/{id}/toggle', [PortadaController::class, 'toggle'])->middleware([AuthMiddleware::class, 'handle']);

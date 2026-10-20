@@ -89,6 +89,42 @@ class Portada
     }
 
     /**
+     * Actualiza en lote el título y el orden de varias portadas
+     * @param array $items Lista de ['id' => int, 'titulo' => string, 'orden' => int]
+     * @return bool true si la transacción se completó
+     * @throws \Exception si ocurre un error (revierte la transacción)
+     */
+    public function updateBatch(array $items): bool
+    {
+        $this->pdo->beginTransaction();
+
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE portada_inicio SET titulo = :titulo, orden = :orden, activo = :activo WHERE id_portada = :id"
+            );
+
+            foreach ($items as $item) {
+                $titulo = trim((string) ($item['titulo'] ?? ''));
+
+                $stmt->execute([
+                    ':titulo' => $titulo === '' ? null : $titulo,
+                    ':orden' => (int) ($item['orden'] ?? 0),
+                    ':activo' => (int) (!empty($item['activo']) ? 1 : 0),
+                    ':id' => (int) ($item['id'] ?? 0),
+                ]);
+            }
+
+            $this->pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
      * Alterna el estado activo de una portada
      */
     public function toggleActive(int $id): void

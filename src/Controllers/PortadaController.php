@@ -112,6 +112,42 @@ class PortadaController extends Controller
     }
 
     /**
+     * Guarda en lote el orden y los títulos de las portadas
+     * POST /portadas/batch-update
+     */
+    public function saveBatch(): void
+    {
+        $ordenes = $_POST['orden'] ?? [];
+        $titulos = $_POST['titulo'] ?? [];
+
+        if (!is_array($ordenes) || !is_array($titulos)) {
+            $_SESSION['error'] = 'Datos inválidos';
+            header('Location: /portadas');
+            exit;
+        }
+
+        $items = [];
+        foreach ($ordenes as $idPortada => $orden) {
+            $items[] = [
+                'id' => (int) $idPortada,
+                'titulo' => trim((string) ($titulos[$idPortada] ?? '')),
+                'orden' => (int) $orden,
+                'activo' => isset($_POST['activo'][$idPortada]) && (int) $_POST['activo'][$idPortada] === 1 ? 1 : 0,
+            ];
+        }
+
+        try {
+            $this->model->updateBatch($items);
+            $_SESSION['success'] = 'Orden, títulos y visibilidad actualizados correctamente.';
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Error al actualizar las portadas: ' . $e->getMessage();
+        }
+
+        header('Location: /portadas');
+        exit;
+    }
+
+    /**
      * Alterna el estado activo/inactivo de una portada
      * POST /portadas/{id}/toggle
      */
