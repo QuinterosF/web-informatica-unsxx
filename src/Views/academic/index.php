@@ -60,8 +60,23 @@ ob_start();
                                     </div>
                                 </a>
                             </td>
-                            <td class="px-4 py-3 font-medium text-gray-900">
-                                <?= htmlspecialchars($academic['nom_acad']) ?>
+                            <!-- Columna Nombre y Sitio Web -->
+                            <td class="px-4 py-3">
+                                <div class="font-medium text-gray-900">
+                                    <?= htmlspecialchars($academic['nom_acad']) ?>
+                                </div>
+                                
+                                <!-- Enlace al Sitio Web (Condicional) -->
+                                <?php if (!empty($academic['sitio_web'])): ?>
+                                    <a href="<?= htmlspecialchars($academic['sitio_web']) ?>" target="_blank" rel="noopener noreferrer" 
+                                    title="Visitar sitio web del docente" 
+                                    class="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold text-unsxx-blue-600 hover:text-unsxx-blue-800 transition-colors bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded border border-blue-200 w-max">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                        Sitio Web Personal
+                                    </a>
+                                <?php endif; ?>
                             </td>
                             <!-- Columna Email -->
                             <td class="px-4 py-3">

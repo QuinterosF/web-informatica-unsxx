@@ -56,7 +56,7 @@ class Academic
     {
         // En findAll NO debe haber ningún "WHERE a.id_acad = ?"
         $sql = "
-            SELECT a.id_acad, a.nom_acad, a.foto_acad, a.cel_acad, a.email_acad, 
+            SELECT a.id_acad, a.nom_acad, a.sitio_web, a.foto_acad, a.cel_acad, a.email_acad, 
             a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
@@ -73,7 +73,7 @@ class Academic
     {
         // findById SÍ requiere el "WHERE a.id_acad = ?"
         $sql = "
-            SELECT a.id_acad, a.nom_acad, a.foto_acad, a.cel_acad, a.email_acad, 
+            SELECT a.id_acad, a.nom_acad, a.sitio_web, a.foto_acad, a.cel_acad, a.email_acad, 
             a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
@@ -114,7 +114,7 @@ class Academic
 
     /**
      * Crea un nuevo académico
-     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional), mostrar_email, mostrar_cel
+     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional), mostrar_email, mostrar_cel, sitio_web (opcional)
      * @return int ID del registro insertado
      * @throws \Exception si validación falla
      */
@@ -143,9 +143,12 @@ class Academic
         // UUID para foto (placeholder)
         $foto = $data['foto_acad'] ?? 'default.png';
 
+        // sitio_web opcional, guardar NULL si vacío
+        $sitioWeb = !empty($data['sitio_web']) ? $data['sitio_web'] : null;
+
         $sql = "
-            INSERT INTO academico (nom_acad, foto_acad, cel_acad, email_acad, cat_acad, desc_acad, mostrar_email, mostrar_cel, usu_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)
+            INSERT INTO academico (nom_acad, foto_acad, cel_acad, email_acad, cat_acad, desc_acad, sitio_web, mostrar_email, mostrar_cel, usu_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
         ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -155,6 +158,7 @@ class Academic
             $data['email_acad'],
             (int) $data['cat_acad'],
             $data['desc_acad'],
+            $sitioWeb,
             (int) ($data['mostrar_email'] ?? 0),
             (int) ($data['mostrar_cel'] ?? 0)
         ]);
@@ -165,7 +169,7 @@ class Academic
     /**
      * Actualiza un académico existente
      * @param int $id ID del académico
-     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional), mostrar_email, mostrar_cel
+     * @param array $data Array con: nom_acad, cel_acad, email_acad, cat_acad, desc_acad, foto_acad (opcional), mostrar_email, mostrar_cel, sitio_web (opcional)
      * @return bool true si se actualizó, false si no
      * @throws \Exception si validación falla
      */
@@ -200,9 +204,12 @@ class Academic
         // Mantener foto actual si no se proporciona nueva
         $foto = $data['foto_acad'] ?? $existing['foto_acad'];
 
+        // sitio_web opcional, guardar NULL si vacío
+        $sitioWeb = array_key_exists('sitio_web', $data) ? ($data['sitio_web'] ?? null) : $existing['sitio_web'] ?? null;
+
         $sql = "
             UPDATE academico 
-            SET nom_acad = ?, foto_acad = ?, cel_acad = ?, email_acad = ?, cat_acad = ?, desc_acad = ?, mostrar_email = ?, mostrar_cel = ?
+            SET nom_acad = ?, foto_acad = ?, cel_acad = ?, email_acad = ?, cat_acad = ?, desc_acad = ?, sitio_web = ?, mostrar_email = ?, mostrar_cel = ?
             WHERE id_acad = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -213,6 +220,7 @@ class Academic
             $data['email_acad'],
             (int) $data['cat_acad'],
             $data['desc_acad'],
+            $sitioWeb,
             (int) ($data['mostrar_email'] ?? 0),
             (int) ($data['mostrar_cel'] ?? 0),
             $id

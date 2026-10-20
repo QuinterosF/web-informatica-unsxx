@@ -50,6 +50,10 @@ class AcademicController extends Controller
             'mostrar_cel' => isset($_POST['mostrar_cel']) ? 1 : 0,
         ];
 
+        // Capturar y sanitizar sitio_web (opcional)
+        $sitioWeb = trim($_POST['sitio_web'] ?? '');
+        $data['sitio_web'] = $sitioWeb !== '' ? filter_var($sitioWeb, FILTER_SANITIZE_URL) : null;
+
         // Validación de seguridad: formato de celular
         if (!empty($data['cel_acad']) && !preg_match('/^[0-9\+\-\s]*$/', $data['cel_acad'])) {
             $categories = $this->model->getCategories();
@@ -122,6 +126,10 @@ class AcademicController extends Controller
             'mostrar_email' => isset($_POST['mostrar_email']) ? 1 : 0,
             'mostrar_cel' => isset($_POST['mostrar_cel']) ? 1 : 0,
         ];
+
+        // Capturar y sanitizar sitio_web (opcional)
+        $sitioWeb = trim($_POST['sitio_web'] ?? '');
+        $data['sitio_web'] = $sitioWeb !== '' ? filter_var($sitioWeb, FILTER_SANITIZE_URL) : null;
 
         // Validación de seguridad: formato de celular
         if (!empty($data['cel_acad']) && !preg_match('/^[0-9\+\-\s]*$/', $data['cel_acad'])) {

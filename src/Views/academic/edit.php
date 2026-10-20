@@ -72,6 +72,22 @@ ob_start();
                     </label>
                 </div>
 
+                <!-- Sitio Web (Opcional) -->
+                <div>
+                    <label for="sitio_web" class="block text-sm font-semibold text-gray-700 mb-2">Sitio Web Personal <span class="text-gray-400 font-normal">(Opcional)</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                            </svg>
+                        </div>
+                        <input type="url" id="sitio_web" name="sitio_web" placeholder="https://misitioweb.com" 
+                            class="w-full pl-10 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-white outline-none transition-all" 
+                            value="<?= htmlspecialchars($old['sitio_web'] ?? $academic['sitio_web'] ?? '') ?>">
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-1">Debe incluir https:// o http://</p>
+                </div>
+
                 <!-- Categoría -->
                 <div>
                     <label for="cat_acad" class="block text-sm font-medium text-gray-700 mb-1">Categoría <span

@@ -15,6 +15,7 @@ use App\Controllers\DirectoryController;
 use App\Controllers\PhoneController;
 use App\Controllers\ServiceLinkController;
 use App\Middleware\AuthMiddleware;
+use App\Controllers\PortadaController;
 
 $router = new Router();
 
@@ -144,6 +145,13 @@ $router->get('/directory/links/{id}/edit', [ServiceLinkController::class, 'edit'
 $router->post('/directory/links/{id}/edit', [ServiceLinkController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/directory/links/{id}', [ServiceLinkController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/directory/links/{id}/delete', [ServiceLinkController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* ==================== PORTADAS DE INICIO (CARRUSEL) ==================== */
+$router->get('/portadas', [PortadaController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/portadas', [PortadaController::class, 'upload'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/portadas/{id}/update', [PortadaController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/portadas/{id}/delete', [PortadaController::class, 'delete'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/portadas/{id}/toggle', [PortadaController::class, 'toggle'])->middleware([AuthMiddleware::class, 'handle']);
 
 /* ==================== FUTUROS MÓDULOS (placeholder) ==================== */
 // Extensión
