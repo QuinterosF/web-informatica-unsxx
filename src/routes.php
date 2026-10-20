@@ -16,6 +16,7 @@ use App\Controllers\PhoneController;
 use App\Controllers\ServiceLinkController;
 use App\Middleware\AuthMiddleware;
 use App\Controllers\PortadaController;
+use App\Controllers\LogroController;
 
 $router = new Router();
 
@@ -80,6 +81,19 @@ $router->get('/extensions/{id}/edit', [ExtensionController::class, 'edit'])->mid
 $router->post('/extensions/{id}/edit', [ExtensionController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/extensions/{id}', [ExtensionController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/extensions/{id}/delete', [ExtensionController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* --- Categorías de Extensión --- */
+$router->get('/extensions/categories', [ExtensionController::class, 'categories'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/categories', [ExtensionController::class, 'storeCategory'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/categories/{id_cat}/update', [ExtensionController::class, 'updateCategory'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/categories/{id_cat}/toggle', [ExtensionController::class, 'toggleCategory'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/categories/{id_cat}/delete', [ExtensionController::class, 'deleteCategory'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* --- Galería de Extensión --- */
+$router->get('/extensions/{id}/gallery', [ExtensionController::class, 'gallery'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/{id}/gallery', [ExtensionController::class, 'uploadPhotos'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/{id_ext}/gallery/{id_foto}/delete', [ExtensionController::class, 'deletePhoto'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/extensions/{id_ext}/gallery/{id_foto}/cover', [ExtensionController::class, 'setCover'])->middleware([AuthMiddleware::class, 'handle']);
 
 /* ==================== CRUD COMUNICADOS (protegido) ==================== */
 $router->get('/announcements', [AnnouncementController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
@@ -152,6 +166,15 @@ $router->post('/portadas', [PortadaController::class, 'upload'])->middleware([Au
 $router->post('/portadas/{id}/update', [PortadaController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/portadas/{id}/delete', [PortadaController::class, 'delete'])->middleware([AuthMiddleware::class, 'handle']);
 $router->post('/portadas/{id}/toggle', [PortadaController::class, 'toggle'])->middleware([AuthMiddleware::class, 'handle']);
+
+/* ==================== LOGROS INSTITUCIONALES ==================== */
+$router->get('/logros', [LogroController::class, 'index'])->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/logros/create', [LogroController::class, 'create'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/logros', [LogroController::class, 'store'])->middleware([AuthMiddleware::class, 'handle']);
+$router->get('/logros/{id}/edit', [LogroController::class, 'edit'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/logros/{id}/edit', [LogroController::class, 'update'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/logros/{id}/delete', [LogroController::class, 'destroy'])->middleware([AuthMiddleware::class, 'handle']);
+$router->post('/logros/{id}/toggle', [LogroController::class, 'toggle'])->middleware([AuthMiddleware::class, 'handle']);
 
 /* ==================== FUTUROS MÓDULOS (placeholder) ==================== */
 // Extensión

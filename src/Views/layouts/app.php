@@ -236,7 +236,7 @@
                         </svg>
                         <span>Extensión y Eventos</span>
                     </a>
-                    <a href="/achievements"
+                    <a href="/logros"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
                         <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             stroke-width="2">
@@ -244,29 +244,6 @@
                                 d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                         </svg>
                         <span>Logros de la Carrera</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- 5. Multimedia -->
-            <div>
-                <div class="flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                        </path>
-                    </svg>
-                    <p class="text-[10px] font-bold uppercase tracking-wider">Multimedia</p>
-                </div>
-                <div class="space-y-1">
-                    <a href="/gallery"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span>Galería Fotográfica</span>
                     </a>
                 </div>
             </div>

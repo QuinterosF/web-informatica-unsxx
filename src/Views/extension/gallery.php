@@ -1,0 +1,155 @@
+<?php
+$title = 'Galería de ' . ($extension['nom_ext'] ?? 'Evento') . ' - Informática UNSXX';
+$pageTitle = 'Galería Fotográfica del Evento';
+ob_start();
+?>
+
+<!-- Cabecera -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-unsxx-blue-900">
+            Galería de: <?= htmlspecialchars($extension['nom_ext'] ?? 'Evento') ?>
+        </h1>
+        <p class="text-xs text-gray-500 mt-1">
+            Sube las fotografías del evento. La imagen marcada como <strong>Portada</strong> será la foto principal del post en el portal público y al compartir en redes sociales.
+        </p>
+    </div>
+    <div class="flex items-center gap-3 ml-auto shrink-0">
+        <a href="/extensions/<?= $extension['id_ext'] ?>/edit"
+           class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-unsxx-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Editar texto del evento
+        </a>
+        <a href="/extensions" class="inline-flex items-center gap-2 text-unsxx-blue-600 hover:text-unsxx-blue-800 font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver al listado
+        </a>
+    </div>
+</div>
+
+<!-- Zona de Subida Múltiple -->
+<div class="bg-white rounded-xl shadow-sm border border-unsxx-blue-100 mb-6">
+    <div class="p-6">
+        <h2 class="text-lg font-semibold text-unsxx-blue-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-unsxx-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Subir nuevas fotos al álbum del evento
+        </h2>
+        <form action="/extensions/<?= $extension['id_ext'] ?>/gallery" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label for="fotos" class="block text-sm font-medium text-gray-700 mb-1">Seleccionar fotografías (múltiples)</label>
+                <input type="file" id="fotos" name="fotos[]" multiple accept="image/jpeg,image/png,image/webp" required
+                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-unsxx-blue-50 file:text-unsxx-blue-700 hover:file:bg-unsxx-blue-100 transition-all border border-gray-300 rounded-lg cursor-pointer">
+                <p class="text-xs text-gray-500 mt-1">Puedes seleccionar varias fotos a la vez (JPG, PNG, WebP).</p>
+            </div>
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-6 py-2.5 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold rounded-lg shadow-sm transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                </svg>
+                Subir Fotos
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Cuadrícula de Fotos del Evento -->
+<?php if (!empty($photos)): ?>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="galleryGrid">
+        <?php foreach ($photos as $photo): ?>
+            <?php
+            $isPortada = !empty($photo['es_portada']);
+            $borderClass = $isPortada ? 'border-2 border-yellow-400 shadow-lg shadow-yellow-100' : 'border border-gray-200';
+            $imageUrl = '/uploads/img/extension/' . htmlspecialchars($photo['nom_foto']);
+            ?>
+            <div class="bg-white rounded-xl shadow-sm <?= $borderClass ?> overflow-hidden transition-all duration-300 hover:shadow-md group flex flex-col">
+                <!-- Imagen -->
+                <a href="<?= $imageUrl ?>" target="_blank" class="block relative overflow-hidden bg-gray-100">
+                    <img src="<?= $imageUrl ?>"
+                         alt="Fotografía del evento"
+                         class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+
+                    <?php if ($isPortada): ?>
+                        <span class="absolute top-2 left-2 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-yellow-900 bg-yellow-300/95 backdrop-blur-xs rounded-full shadow-sm">
+                            <span aria-hidden="true">🌟</span> PORTADA DEL POST
+                        </span>
+                    <?php endif; ?>
+                </a>
+
+                <!-- Acciones -->
+                <div class="p-4 pt-3 space-y-2 mt-auto">
+                    <?php if ($isPortada): ?>
+                        <span class="inline-flex items-center justify-center w-full px-3 py-2 text-xs font-semibold text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-lg cursor-default">
+                            <svg class="w-4 h-4 mr-1 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292l-2.8-2.034a1 1 0 00-1.176 0z"/>
+                            </svg>
+                            PORTADA ACTUAL
+                        </span>
+                    <?php else: ?>
+                        <form action="/extensions/<?= $extension['id_ext'] ?>/gallery/<?= $photo['id_foto'] ?>/cover" method="POST" class="w-full">
+                            <button type="submit" title="Usar como imagen principal del evento"
+                                class="inline-flex items-center justify-center w-full px-3 py-2 text-xs font-semibold text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 hover:border-yellow-300 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292l-2.8-2.034a1 1 0 00-1.176 0z"/>
+                                </svg>
+                                Establecer como portada
+                            </button>
+                        </form>
+                    <?php endif; ?>
+
+                    <!-- Eliminar Foto -->
+                    <form action="/extensions/<?= $extension['id_ext'] ?>/gallery/<?= $photo['id_foto'] ?>/delete" method="POST" class="w-full" onsubmit="return confirmDeleteEventPhoto(event, this)">
+                        <button type="submit" title="Eliminar fotografía"
+                            class="inline-flex items-center justify-center w-full px-3 py-2 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php else: ?>
+    <!-- Estado Vacío -->
+    <div class="bg-white rounded-xl shadow-sm border border-unsxx-blue-100 p-12 text-center">
+        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Este evento aún no tiene fotografías</h3>
+        <p class="text-gray-500">Usa el selector superior para subir las fotos de la actividad. La primera foto se marcará como portada automáticamente.</p>
+    </div>
+<?php endif; ?>
+
+<script>
+    function confirmDeleteEventPhoto(event, form) {
+        event.preventDefault();
+        Swal.fire({
+            title: '¿Eliminar fotografía?',
+            text: "Esta acción eliminará la imagen del servidor y del álbum del evento.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#3b82f6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+        return false;
+    }
+</script>
+
+<?php
+$content = ob_get_clean();
+require __DIR__ . '/../layouts/app.php';
+?>
