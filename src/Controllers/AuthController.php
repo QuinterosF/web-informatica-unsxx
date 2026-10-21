@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Config\Database;
 use App\Core\Controller;
 use App\Core\Session;
 use App\Models\User;
@@ -13,7 +14,41 @@ class AuthController extends Controller
         if (Session::isLoggedIn()) {
             $this->redirect('/dashboard');
         }
-        $this->view('auth/login', ['error' => $_GET['error'] ?? null]);
+
+        $this->view('auth/login', [
+            'error' => $_GET['error'] ?? null,
+            'contactPhone' => $this->getContactPhone(),
+            'resetRequested' => ($_GET['reset_requested'] ?? '') === '1',
+            'resetRequestedEmail' => $_SESSION['reset_requested_email'] ?? null,
+        ]);
+    }
+
+    /**
+     * Primer celular activo, limpio para usarlo en enlaces wa.me.
+     */
+    private function getContactPhone(): string
+    {
+        $stmt = Database::getInstance()->prepare("
+            SELECT num_cel
+            FROM celular
+            WHERE estado = 1
+            ORDER BY (
+                nom_cel LIKE '%Sistema%'
+                OR nom_cel LIKE '%Admin%'
+                OR nom_cel LIKE '%Soporte%'
+                OR nom_cel LIKE '%Direcci%'
+            ) DESC, id_cel ASC
+            LIMIT 1
+        ");
+        $stmt->execute();
+
+        $phone = preg_replace('/\D+/', '', (string) $stmt->fetchColumn()) ?? '';
+
+        if ($phone !== '' && strlen($phone) === 8) {
+            $phone = '591' . $phone;
+        }
+
+        return $phone;
     }
 
     public function login(): void
@@ -68,6 +103,24 @@ class AuthController extends Controller
         }
 
         $this->redirect('/login?error=invalid');
+    }
+
+    /**
+     * Registra una solicitud de restauración de contraseña.
+     */
+    public function forgotPassword(): void
+    {
+        $email = trim($_POST['reset_email'] ?? '');
+
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->redirect('/login?error=empty');
+        }
+
+        $userModel = new User();
+        $userModel->requestPasswordReset($email);
+
+        $_SESSION['reset_requested_email'] = $email;
+        $this->redirect('/login?reset_requested=1');
     }
 
     public function logout(): void

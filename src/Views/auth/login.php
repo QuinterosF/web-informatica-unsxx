@@ -57,6 +57,45 @@
             <p class="text-unsxx-blue-600 mt-1 text-sm">Universidad Nacional "Siglo XX"</p>
         </div>
 
+        <!-- Confirmación de Solicitud de Restauración de Contraseña -->
+        <?php if (isset($_GET['reset_requested'])): ?>
+            <?php
+            $reqEmail = $_SESSION['reset_requested_email'] ?? '';
+            unset($_SESSION['reset_requested_email']);
+            $cleanPhone = preg_replace('/\D+/', '', $contactPhone ?? '');
+            if (strlen($cleanPhone) === 8) {
+                $cleanPhone = '591' . $cleanPhone;
+            }
+            $waText = urlencode("Hola, solicité en el sistema de Informática - UNSXX la restauración de mi contraseña para la cuenta: " . $reqEmail);
+            $waUrl = !empty($cleanPhone)
+                ? "https://wa.me/{$cleanPhone}?text={$waText}"
+                : "https://wa.me/?text={$waText}";
+            ?>
+            <div class="mb-6 p-4 rounded-xl border-l-4 bg-green-50 border-green-500 text-green-800 animate-slide-down relative z-10" role="status">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 mt-0.5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="text-xs leading-relaxed">
+                        <p class="font-bold text-sm text-green-900">Solicitud registrada en el sistema</p>
+                        <p class="mt-1 text-green-700">
+                            Se envió una notificación al Panel del Administrador para que genere tu nueva contraseña temporal.
+                        </p>
+                        <div class="mt-3 pt-2.5 border-t border-green-200/80 flex flex-col gap-1.5">
+                            <span class="text-[11px] text-green-700 font-medium">Opcional: Si deseas atención inmediata, puedes avisar por WhatsApp:</span>
+                            <a href="<?= htmlspecialchars($waUrl) ?>" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold text-xs transition-colors shadow-sm w-full">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
+                                </svg>
+                                Contactar al administrador por WhatsApp (Opcional)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Error Messages -->
         <?php if (isset($error)): ?>
             <div class="mb-6 p-4 rounded-xl border-l-4 bg-red-50 border-red-400 text-red-700 animate-slide-down relative z-10" role="alert">
@@ -117,7 +156,16 @@
 
             <!-- Password Field -->
             <div>
-                <label for="password" class="block text-sm font-semibold text-unsxx-blue-800 mb-1.5">Contraseña</label>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label for="password" class="block text-sm font-semibold text-unsxx-blue-800">Contraseña</label>
+                    <button type="button" onclick="openForgotModal()"
+                        class="text-xs font-semibold text-unsxx-blue-600 hover:text-unsxx-blue-900 hover:underline inline-flex items-center gap-1 cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        ¿Olvidaste tu contraseña?
+                    </button>
+                </div>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-unsxx-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -150,6 +198,79 @@
             <p class="text-xs text-unsxx-blue-500">Sistema de Gestión Académica &copy; <?= date('Y') ?></p>
         </div>
     </div>
+
+    <!-- Modal de Solicitud de Restauración de Contraseña -->
+    <div id="forgotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-unsxx-blue-950/75 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-unsxx-blue-100 w-full max-w-md overflow-hidden animate-slide-down">
+            <div class="px-6 py-4 bg-unsxx-blue-900 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <svg class="w-5 h-5 text-unsxx-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    <h3 class="font-bold text-base">Solicitar Restauración de Clave</h3>
+                </div>
+                <button type="button" onclick="closeForgotModal()" class="text-blue-200 hover:text-white cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form method="POST" action="/forgot-password" class="p-6 space-y-4">
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Ingresa el correo electrónico de tu cuenta. El sistema notificará al <strong>Administrador General</strong> para que genere tu nueva contraseña temporal.
+                </p>
+
+                <div>
+                    <label for="reset_email" class="block text-xs font-bold uppercase tracking-wide text-unsxx-blue-800 mb-1.5">
+                        Correo registrado en el sistema
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-unsxx-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <input type="email" id="reset_email" name="reset_email" required
+                            placeholder="tucorreo@ejemplo.com"
+                            class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-unsxx-blue-500">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
+                    <button type="button" onclick="closeForgotModal()"
+                        class="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 text-xs cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="inline-flex items-center gap-1.5 px-5 py-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold rounded-xl shadow-sm text-xs cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Registrar Solicitud
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openForgotModal() {
+            const loginEmail = document.getElementById('email').value.trim();
+            if (loginEmail) {
+                document.getElementById('reset_email').value = loginEmail;
+            }
+            const modal = document.getElementById('forgotModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeForgotModal() {
+            const modal = document.getElementById('forgotModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
 
     <!-- Custom animations -->
     <style>

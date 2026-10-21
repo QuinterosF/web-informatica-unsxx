@@ -7,6 +7,7 @@ use App\Core\Controller;
 use App\Core\Session;
 use App\Models\Dashboard;
 use App\Models\Lab;
+use App\Models\User;
 
 class HomeController extends Controller
 {
@@ -31,10 +32,13 @@ class HomeController extends Controller
         ];
 
         if ($isAdmin) {
+            $userModel = new User();
+
             $data['stats'] = $dashboard->getAdminStats();
             $data['alerts'] = $dashboard->getIncompleteAlerts();
             $data['audit'] = $dashboard->getRecentAudit(8);
             $data['pendingLabAccounts'] = $dashboard->getPendingLabAccountsCount();
+            $data['pendingResets'] = $userModel->getPendingResetUsers();
         } else {
             $modules = $_SESSION['user_modules'] ?? [];
             if (!is_array($modules)) {

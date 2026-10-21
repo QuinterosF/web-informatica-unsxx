@@ -24,6 +24,7 @@ class UserController extends Controller
 
         $this->view('user/index', [
             'users' => $this->model->findAll(),
+            'pendingResets' => $this->model->getPendingResetUsers(),
             'modules' => User::MODULES,
             'title' => 'Usuarios y Permisos - Informática UNSXX',
             'pageTitle' => 'Usuarios y Permisos',
@@ -217,6 +218,7 @@ class UserController extends Controller
         $_SESSION['temp_credentials'] = [
             'name' => $user['usu_nom'],
             'email' => $user['usu_correo'],
+            'phone' => $user['cel_acad'] ?? '',
             'password' => $plainPassword,
         ];
         $_SESSION['success'] = 'Contraseña restablecida correctamente. Comparte la clave temporal con el usuario.';

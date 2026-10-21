@@ -43,6 +43,7 @@ $adminOnly = static function (): void {
 $router->get('/', [HomeController::class, 'index']);
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
+$router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
 $router->get('/logout', [AuthController::class, 'logout']);
 $router->get('/unauthorized', function () {
     echo "<div style='text-align:center; margin-top:50px; font-family:sans-serif;'>

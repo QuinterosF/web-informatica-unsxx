@@ -58,8 +58,9 @@ class User
     {
         $sql = "
             SELECT u.usu_id, u.usu_nom, u.usu_correo, u.modulos, u.estado,
+                   u.solicitud_reset,
                    ur.rol_id, r.rol_nombre,
-                   a.id_acad, a.nom_acad,
+                   a.id_acad, a.nom_acad, a.cel_acad,
                    GROUP_CONCAT(DISTINCT l.nombre_lab ORDER BY l.nombre_lab SEPARATOR ', ') AS laboratorios
             FROM usuario u
             LEFT JOIN usuario_rol ur ON u.usu_id = ur.usu_id
@@ -67,8 +68,8 @@ class User
             LEFT JOIN academico a ON a.usu_id = u.usu_id
             LEFT JOIN laboratorio l ON l.resp_acad_id = a.id_acad
             GROUP BY u.usu_id, u.usu_nom, u.usu_correo, u.modulos, u.estado,
-                     ur.rol_id, r.rol_nombre, a.id_acad, a.nom_acad
-            ORDER BY u.usu_nom ASC
+                     u.solicitud_reset, ur.rol_id, r.rol_nombre, a.id_acad, a.nom_acad, a.cel_acad
+            ORDER BY u.solicitud_reset DESC, u.usu_nom ASC
         ";
         $rows = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -90,7 +91,7 @@ class User
         $sql = "
             SELECT u.usu_id, u.usu_nom, u.usu_correo, u.modulos, u.estado,
                    ur.rol_id, r.rol_nombre,
-                   a.id_acad, a.nom_acad
+                   a.id_acad, a.nom_acad, a.cel_acad
             FROM usuario u
             LEFT JOIN usuario_rol ur ON u.usu_id = ur.usu_id
             LEFT JOIN rol r ON ur.rol_id = r.rol_id
@@ -119,6 +120,54 @@ class User
         $hash = $stmt->fetchColumn();
 
         return $hash !== false ? (string) $hash : null;
+    }
+
+    /**
+     * Marca una solicitud de restauración de contraseña para el correo indicado.
+     */
+    public function requestPasswordReset(string $email): bool
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE usuario
+            SET solicitud_reset = 1
+            WHERE usu_correo = :email
+              AND estado = 1
+        ");
+        $stmt->execute(['email' => trim($email)]);
+
+        return true;
+    }
+
+    /**
+     * Cuenta las solicitudes de restauración pendientes de usuarios activos.
+     */
+    public function countPasswordResetRequests(): int
+    {
+        $stmt = $this->pdo->query("
+            SELECT COUNT(*)
+            FROM usuario
+            WHERE estado = 1
+              AND solicitud_reset = 1
+        ");
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Usuarios activos con una solicitud de restauración pendiente.
+     */
+    public function getPendingResetUsers(): array
+    {
+        $sql = "
+            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.actualizado_en, a.cel_acad
+            FROM usuario u
+            LEFT JOIN academico a ON a.usu_id = u.usu_id
+            WHERE u.estado = 1
+              AND u.solicitud_reset = 1
+            ORDER BY u.actualizado_en DESC
+        ";
+
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -376,7 +425,7 @@ class User
         try {
             $sql = "
                 UPDATE usuario
-                SET usu_nom = ?, usu_correo = ?, modulos = ?
+                SET usu_nom = ?, usu_correo = ?, modulos = ?, solicitud_reset = 0
                 WHERE usu_id = ?
             ";
             $stmt = $this->pdo->prepare($sql);
@@ -434,8 +483,15 @@ class User
      */
     public function updatePassword(int $id, string $newHash): bool
     {
-        $stmt = $this->pdo->prepare("UPDATE usuario SET usu_pass = ? WHERE usu_id = ?");
-        $stmt->execute([$newHash, $id]);
+        $stmt = $this->pdo->prepare("
+            UPDATE usuario
+            SET usu_pass = :hash, solicitud_reset = 0
+            WHERE usu_id = :id
+        ");
+        $stmt->execute([
+            'hash' => $newHash,
+            'id' => $id,
+        ]);
 
         return $stmt->rowCount() > 0;
     }

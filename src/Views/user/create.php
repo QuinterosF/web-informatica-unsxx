@@ -61,7 +61,12 @@ ob_start();
                 <?php endif; ?>
             </select>
             <p class="text-xs text-blue-700 mt-1.5">
-                💡 Si seleccionas a un docente que es <strong>Responsable de Laboratorio</strong>, el sistema le dará
+                <svg class="w-4 h-4 text-blue-600 inline-block mr-1 -mt-0.5 shrink-0" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Si seleccionas a un docente que es <strong>Responsable de Laboratorio</strong>, el sistema le dará
                 acceso automático a su laboratorio sin necesidad de darle acceso global a todos los laboratorios.
             </p>
         </div>
@@ -92,10 +97,17 @@ ob_start();
                     <input type="text" id="usu_pass" name="usu_pass" required
                         value="<?= htmlspecialchars($defaultPass) ?>"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 outline-none text-sm font-mono bg-amber-50/40">
-                    
+
                     <button type="button" onclick="generateRandomPass()" title="Generar otra clave aleatoria"
                         class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-lg text-xs font-bold shrink-0 cursor-pointer">
-                        Generar
+                        <span class="inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-unsxx-blue-700 shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Generar
+                        </span>
                     </button>
                     <button type="button" onclick="copyCreateCredentials()"
                         title="Copiar credenciales actuales para WhatsApp"
@@ -110,11 +122,20 @@ ob_start();
             <div>
                 <label for="rol_id" class="block text-sm font-medium text-gray-700 mb-1">Nivel de Rol en el Sistema
                     <span class="text-red-500">*</span></label>
-                <select id="rol_id" name="rol_id" onchange="toggleModulesPanel()"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 outline-none bg-white text-sm">
-                    <option value="2" selected>⚙️ Operador / Docente / Secretaria (Acceso por Módulos)</option>
-                    <option value="1">🛡️ Administrador General (Acceso Total)</option>
-                </select>
+                <div class="relative">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-unsxx-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <select id="rol_id" name="rol_id" onchange="toggleModulesPanel()"
+                        class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 outline-none bg-white text-sm">
+                        <option value="2" selected>Operador / Docente / Secretaria (Acceso por Módulos)</option>
+                        <option value="1">Administrador General (Acceso Total)</option>
+                    </select>
+                </div>
             </div>
         </div>
 
