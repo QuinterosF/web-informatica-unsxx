@@ -221,6 +221,24 @@ class AcademicController extends Controller
     }
 
     /**
+     * Alterna la visibilidad pública del académico (activo/inactivo)
+     */
+    public function toggle(int $id): void
+    {
+        try {
+            if ($this->model->toggleActive($id)) {
+                $_SESSION['success'] = 'Visibilidad del docente actualizada correctamente.';
+            } else {
+                $_SESSION['error'] = 'El docente no existe.';
+            }
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Error al actualizar la visibilidad: ' . $e->getMessage();
+        }
+
+        $this->redirect('/academics');
+    }
+
+    /**
      * Sube y valida la imagen localmente para este módulo
      */
     private function uploadPhoto(array $file): string

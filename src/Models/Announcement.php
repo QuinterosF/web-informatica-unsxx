@@ -134,10 +134,11 @@ class Announcement
         // Si no vienen en $data, mantener los existentes
         $docCom = $data['doc_com'] ?? $existing['doc_com'] ?? null;
         $fotoCom = $data['foto_com'] ?? $existing['foto_com'] ?? null;
+        $actualizadoPor = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
             UPDATE comunicado 
-            SET nom_com = ?, fech_com = ?, desc_com = ?, doc_com = ?, foto_com = ?, estado = ?
+            SET nom_com = ?, fech_com = ?, desc_com = ?, doc_com = ?, foto_com = ?, estado = ?, actualizado_por = ?
             WHERE id_com = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -148,6 +149,7 @@ class Announcement
             $docCom,
             $fotoCom,
             (int)($data['estado'] ?? 0),
+            $actualizadoPor,
             $id
         ]);
 

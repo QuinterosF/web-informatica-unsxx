@@ -69,7 +69,13 @@ class Session
 
     public static function getRole(): ?string
     {
-        return self::get('user.role');
+        $role = self::get('user_role');
+        if ($role !== null) {
+            return $role;
+        }
+
+        $user = self::getUser();
+        return is_array($user) ? ($user['role'] ?? null) : null;
     }
 
     public static function hasRole(string ...$roles): bool

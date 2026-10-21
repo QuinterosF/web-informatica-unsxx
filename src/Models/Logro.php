@@ -93,9 +93,11 @@ class Logro
             ? $data['foto_logro']
             : ($existing['foto_logro'] ?? null);
 
+        $actualizadoPor = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
+
         $sql = "
             UPDATE logro
-            SET posicion = ?, nom_log = ?, categoria_logro = ?, lugar_log = ?, foto_logro = ?, fech_log = ?, activo = ?
+            SET posicion = ?, nom_log = ?, categoria_logro = ?, lugar_log = ?, foto_logro = ?, fech_log = ?, activo = ?, actualizado_por = ?
             WHERE id_log = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -107,6 +109,7 @@ class Logro
             !empty($foto) ? $foto : null,
             $data['fech_log'],
             !empty($data['activo']) ? 1 : 0,
+            $actualizadoPor,
             $id
         ]);
 

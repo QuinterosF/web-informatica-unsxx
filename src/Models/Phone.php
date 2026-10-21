@@ -92,10 +92,11 @@ class Phone
 
         $icono = $data['icono'] ?? $existing['icono'];
         $estado = $data['estado'] ?? 1;
+        $actualizadoPor = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
             UPDATE celular 
-            SET nom_cel = ?, num_cel = ?, icono = ?, estado = ?
+            SET nom_cel = ?, num_cel = ?, icono = ?, estado = ?, actualizado_por = ?
             WHERE id_cel = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -104,6 +105,7 @@ class Phone
             $data['num_cel'],
             $icono,
             (int)$estado,
+            $actualizadoPor,
             $id
         ]);
 

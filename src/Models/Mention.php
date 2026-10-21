@@ -177,10 +177,11 @@ class Mention
         }
 
         $escudo = $data['escudo_url'] ?? $existing['escudo_url'];
+        $actualizadoPor = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
             UPDATE mencion_instituto 
-            SET nombre = ?, perfil_profesional = ?, coordinador = ?, escudo_url = ?, estado = ?
+            SET nombre = ?, perfil_profesional = ?, coordinador = ?, escudo_url = ?, estado = ?, actualizado_por = ?
             WHERE id_men = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -190,6 +191,7 @@ class Mention
             $coordinador,
             $escudo,
             (int)($data['estado'] ?? 1),
+            $actualizadoPor,
             $id
         ]);
 

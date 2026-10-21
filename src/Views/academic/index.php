@@ -65,6 +65,12 @@ ob_start();
                                 <div class="font-medium text-gray-900">
                                     <?= htmlspecialchars($academic['nom_acad']) ?>
                                 </div>
+
+                                <?php if ((int) ($academic['activo'] ?? 1) !== 1): ?>
+                                    <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-200">
+                                        Inactivo
+                                    </span>
+                                <?php endif; ?>
                                 
                                 <!-- Enlace al Sitio Web (Condicional) -->
                                 <?php if (!empty($academic['sitio_web'])): ?>
@@ -135,6 +141,19 @@ ob_start();
                                             </path>
                                         </svg>
                                     </a>
+                                    <?php $isActive = (int) ($academic['activo'] ?? 1) === 1; ?>
+                                    <form action="/academics/<?= $academic['id_acad'] ?>/toggle" method="POST"
+                                        class="inline-block">
+                                        <label class="inline-flex items-center cursor-pointer"
+                                            title="<?= $isActive ? 'Ocultar del portal público' : 'Mostrar en el portal público' ?>">
+                                            <input type="checkbox" onChange="this.form.submit()" class="sr-only peer"
+                                                <?= $isActive ? 'checked' : '' ?>>
+                                            <div class="relative w-9 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                            <span class="ms-2 text-[10px] font-semibold <?= $isActive ? 'text-green-700' : 'text-gray-500' ?>">
+                                                <?= $isActive ? 'Visible' : 'Oculto' ?>
+                                            </span>
+                                        </label>
+                                    </form>
                                     <form action="/academics/<?= $academic['id_acad'] ?>/delete" method="POST"
                                         class="inline-block form-eliminar">
                                         <button type="submit" class="text-red-500 hover:text-red-700 transition-colors"

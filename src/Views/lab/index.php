@@ -1,21 +1,27 @@
 <?php
 $title = 'Laboratorios - Informática UNSXX';
 $pageTitle = 'Gestión de Laboratorios';
+$ownerMode = $ownerMode ?? false;
 ob_start();
 ?>
 
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
     <div>
-        <p class="text-xs text-gray-500 mt-1 hidden sm:block">Gestione los espacios físicos, horarios y docentes
-            responsables.</p>
+        <p class="text-xs text-gray-500 mt-1 hidden sm:block">
+            <?= $ownerMode
+                ? 'Estos son los laboratorios que tienes asignados. Puedes actualizar el horario y la galería.'
+                : 'Gestione los espacios físicos, horarios y docentes responsables.' ?>
+        </p>
     </div>
-    <a href="/labs/create"
-        class="inline-flex items-center gap-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all text-sm ml-auto">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Nuevo Laboratorio
-    </a>
+    <?php if (!$ownerMode): ?>
+        <a href="/labs/create"
+            class="inline-flex items-center gap-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold px-4 py-2.5 rounded-lg shadow-sm transition-all text-sm ml-auto">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nuevo Laboratorio
+        </a>
+    <?php endif; ?>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-unsxx-blue-100">
@@ -120,17 +126,19 @@ ob_start();
                                         </svg>
                                     </a>
 
-                                    <!-- Botón Eliminar -->
-                                    <form action="/labs/<?= $lab['id_lab'] ?>/delete" method="POST" class="inline form-delete">
-                                        <button type="submit" title="Eliminar"
-                                            class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                </path>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    <!-- Botón Eliminar (solo administradores/gestores globales) -->
+                                    <?php if (!$ownerMode): ?>
+                                        <form action="/labs/<?= $lab['id_lab'] ?>/delete" method="POST" class="inline form-delete">
+                                            <button type="submit" title="Eliminar"
+                                                class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
 
                                 </div>
                             </td>

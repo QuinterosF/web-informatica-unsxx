@@ -42,16 +42,19 @@ class Portada
     /**
      * Inserta una nueva foto en la portada
      * @param string $archivo_url Nombre del archivo subido
+     * @param int|null $subido_por Usuario que realiza la subida (por defecto, el de la sesión)
      * @return bool true si se insertó, false si no
      */
-    public function addPhoto(string $archivo_url): bool
+    public function addPhoto(string $archivo_url, ?int $subido_por = null): bool
     {
+        $subidoPor = $subido_por ?? (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
+
         $sql = "
-            INSERT INTO portada_inicio (archivo_url)
-            VALUES (?)
+            INSERT INTO portada_inicio (archivo_url, subido_por)
+            VALUES (?, ?)
         ";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$archivo_url]);
+        $stmt->execute([$archivo_url, $subidoPor]);
         return $stmt->rowCount() > 0;
     }
 

@@ -117,9 +117,11 @@ class OfficialDocument
             $archivoPdf = $data['archivo_pdf'];
         }
 
+        $actualizadoPor = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
+
         $sql = "
             UPDATE documento_oficial 
-            SET titulo = ?, categoria = ?, archivo_pdf = ?, gestion = ?, estado = ?, subido_por = ?
+            SET titulo = ?, categoria = ?, archivo_pdf = ?, gestion = ?, estado = ?, actualizado_por = ?
             WHERE id_doc = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -129,7 +131,7 @@ class OfficialDocument
             $archivoPdf,
             (int)$data['gestion'],
             (int)($data['estado'] ?? 1),
-            (int)$data['subido_por'],
+            $actualizadoPor,
             $id
         ]);
 

@@ -144,12 +144,11 @@ class Route
 
     public function middleware(mixed ...$middlewares): self
     {
+        // Cada argumento es un middleware completo: un closure, un callable
+        // o un arreglo [Clase::class, 'metodo']. No se debe aplanar el arreglo,
+        // porque executeRoute() lo instancia y ejecuta como una sola unidad.
         foreach ($middlewares as $mw) {
-            if (is_array($mw) && isset($mw[0]) && !is_callable($mw)) {
-                $this->middlewares = array_merge($this->middlewares, $mw);
-            } else {
-                $this->middlewares[] = $mw;
-            }
+            $this->middlewares[] = $mw;
         }
         return $this;
     }

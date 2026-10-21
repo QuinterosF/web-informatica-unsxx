@@ -116,7 +116,7 @@ class Extension
 
         $sql = "
             UPDATE extension
-            SET id_cat_ext = ?, nom_ext = ?, slug_ext = ?, fech_ext = ?, lugar_ext = ?, desc_ext = ?, enlace_externo = ?, destacado = ?, activo = ?
+            SET id_cat_ext = ?, nom_ext = ?, slug_ext = ?, fech_ext = ?, lugar_ext = ?, desc_ext = ?, enlace_externo = ?, destacado = ?, activo = ?, actualizado_por = ?
             WHERE id_ext = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -130,6 +130,7 @@ class Extension
             !empty($data['enlace_externo']) ? $data['enlace_externo'] : null,
             !empty($data['destacado']) ? 1 : 0,
             !empty($data['activo']) ? 1 : 0,
+            (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1),
             $id
         ]);
 

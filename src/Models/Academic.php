@@ -57,7 +57,8 @@ class Academic
         // En findAll NO debe haber ningún "WHERE a.id_acad = ?"
         $sql = "
             SELECT a.id_acad, a.nom_acad, a.sitio_web, a.foto_acad, a.cel_acad, a.email_acad, 
-            a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel
+            a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel,
+            a.activo, a.creado_por, a.actualizado_por
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
             ORDER BY a.nom_acad ASC
@@ -74,7 +75,8 @@ class Academic
         // findById SÍ requiere el "WHERE a.id_acad = ?"
         $sql = "
             SELECT a.id_acad, a.nom_acad, a.sitio_web, a.foto_acad, a.cel_acad, a.email_acad, 
-            a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel
+            a.cat_acad, c.cat_nombre, a.desc_acad, a.mostrar_email, a.mostrar_cel,
+            a.activo, a.creado_por, a.actualizado_por
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
             WHERE a.id_acad = ?
@@ -145,10 +147,11 @@ class Academic
 
         // sitio_web opcional, guardar NULL si vacío
         $sitioWeb = !empty($data['sitio_web']) ? $data['sitio_web'] : null;
+        $creadoPor = (int) ($data['creado_por'] ?? $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
-            INSERT INTO academico (nom_acad, foto_acad, cel_acad, email_acad, cat_acad, desc_acad, sitio_web, mostrar_email, mostrar_cel, usu_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
+            INSERT INTO academico (nom_acad, foto_acad, cel_acad, email_acad, cat_acad, desc_acad, sitio_web, mostrar_email, mostrar_cel, usu_id, activo, creado_por)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)
         ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -160,7 +163,9 @@ class Academic
             $data['desc_acad'],
             $sitioWeb,
             (int) ($data['mostrar_email'] ?? 0),
-            (int) ($data['mostrar_cel'] ?? 0)
+            (int) ($data['mostrar_cel'] ?? 0),
+            (int) ($data['activo'] ?? 1),
+            $creadoPor
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -206,10 +211,11 @@ class Academic
 
         // sitio_web opcional, guardar NULL si vacío
         $sitioWeb = array_key_exists('sitio_web', $data) ? ($data['sitio_web'] ?? null) : $existing['sitio_web'] ?? null;
+        $actualizadoPor = (int) ($data['actualizado_por'] ?? $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
             UPDATE academico 
-            SET nom_acad = ?, foto_acad = ?, cel_acad = ?, email_acad = ?, cat_acad = ?, desc_acad = ?, sitio_web = ?, mostrar_email = ?, mostrar_cel = ?
+            SET nom_acad = ?, foto_acad = ?, cel_acad = ?, email_acad = ?, cat_acad = ?, desc_acad = ?, sitio_web = ?, mostrar_email = ?, mostrar_cel = ?, actualizado_por = ?
             WHERE id_acad = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -223,8 +229,26 @@ class Academic
             $sitioWeb,
             (int) ($data['mostrar_email'] ?? 0),
             (int) ($data['mostrar_cel'] ?? 0),
+            $actualizadoPor,
             $id
         ]);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Alterna la visibilidad pública del académico (activo/inactivo)
+     */
+    public function toggleActive(int $id): bool
+    {
+        $actualizadoPor = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
+
+        $stmt = $this->pdo->prepare("
+            UPDATE academico
+            SET activo = 1 - activo, actualizado_por = ?
+            WHERE id_acad = ?
+        ");
+        $stmt->execute([$actualizadoPor, $id]);
 
         return $stmt->rowCount() > 0;
     }

@@ -4,6 +4,7 @@
  * Extender en cada vista con: require __DIR__ . '/../../layouts/app.php';
  * Variables esperadas: $title, $pageTitle, $content
  */
+use App\Core\Auth;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -73,33 +74,20 @@
                     <p class="text-[10px] font-bold uppercase tracking-wider">Principal</p>
                 </div>
                 <div class="space-y-1">
-
-                    <!-- Lógica condicional: Solo se renderiza si es 'admin' -->
-                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
-                        <a href="/admin"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white bg-unsxx-blue-800 hover:bg-unsxx-blue-700 transition shadow-sm border border-unsxx-blue-700">
-                            <svg class="w-4 h-4 text-unsxx-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            <span class="font-semibold">Panel de Administración</span>
-                        </a>
-                    <?php endif; ?>
-
                     <a href="/dashboard"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white bg-unsxx-blue-800 hover:bg-unsxx-blue-700 transition shadow-sm border border-unsxx-blue-700">
+                        <svg class="w-4 h-4 text-unsxx-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
-                        <span>Mi Dashboard</span>
+                        <span class="font-semibold">Inicio / Dashboard</span>
                     </a>
                 </div>
             </div>
 
             <!-- 2. Institución -->
+            <?php if (Auth::canAccessModule('institucion') || Auth::canAccessModule('portadas') || Auth::canAccessModule('redes')): ?>
             <div>
                 <div class="flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -110,40 +98,49 @@
                     <p class="text-[10px] font-bold uppercase tracking-wider">Institución</p>
                 </div>
                 <div class="space-y-1">
-                    <a href="/institutional-info"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 0h4m-4 0V9m0 0h4m-4 0V5" />
-                        </svg>
-                        <span>Identidad y Textos</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('institucion')): ?>
+                        <a href="/institutional-info"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0v-4m0 0h4m-4 0V9m0 0h4m-4 0V5" />
+                            </svg>
+                            <span>Identidad y Textos</span>
+                        </a>
+                    <?php endif; ?>
 
-                    <a href="/portadas"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        Fotos Institucionales
-                    </a>
+                    <?php if (Auth::canAccessModule('portadas')): ?>
+                        <a href="/portadas"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            Fotos Institucionales
+                        </a>
+                    <?php endif; ?>
 
-                    <a href="/directory"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                        <span>Directorio y Redes</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('redes')): ?>
+                        <a href="/directory"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                            <span>Directorio y Redes</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
+            <?php endif; ?>
+
             <!-- 3. Gestión Académica -->
+            <?php if (Auth::canAccessModule('academics') || Auth::canAccessModule('documents') || Auth::canAccessModule('curricular') || Auth::canAccessModule('laboratories') || Auth::canAccessModule('admissions')): ?>
             <div>
                 <div class="flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -154,60 +151,73 @@
                     <p class="text-[10px] font-bold uppercase tracking-wider">Gestión Académica</p>
                 </div>
                 <div class="space-y-1">
-                    <a href="/academics"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                        </svg>
-                        <span>Plantel Docente y Administrativo</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('academics')): ?>
+                        <a href="/academics"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                            </svg>
+                            <span>Plantel Docente y Administrativo</span>
+                        </a>
+                    <?php endif; ?>
 
-                    <a href="/documents"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>Documentos y Reglamentos</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('documents')): ?>
+                        <a href="/documents"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span>Documentos y Reglamentos</span>
+                        </a>
+                    <?php endif; ?>
 
-                    <a href="/mentions"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>Menciones - IIDAI</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('curricular')): ?>
+                        <a href="/mentions"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>Menciones - IIDAI</span>
+                        </a>
+                    <?php endif; ?>
 
-                    <a href="/labs"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span>Laboratorios</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('laboratories')): ?>
+                        <a href="/labs"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>Laboratorios</span>
+                        </a>
+                    <?php endif; ?>
 
-                    <a href="/admissions"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        <span>Procesos de Admisión</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('admissions')): ?>
+                        <a href="/admissions"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span>Procesos de Admisión</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
+            <?php endif; ?>
+
             <!-- 4. Comunicación y Extensión -->
+            <?php if (Auth::canAccessModule('communications') || Auth::canAccessModule('extensions') || Auth::canAccessModule('logros')): ?>
             <div>
                 <div class="flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -218,37 +228,46 @@
                     <p class="text-[10px] font-bold uppercase tracking-wider">Comunicación y Extensión</p>
                 </div>
                 <div class="space-y-1">
-                    <a href="/announcements"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                        </svg>
-                        <span>Comunicados Oficiales</span>
-                    </a>
-                    <a href="/extensions"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span>Extensión y Eventos</span>
-                    </a>
-                    <a href="/logros"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
-                        <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        <span>Logros de la Carrera</span>
-                    </a>
+                    <?php if (Auth::canAccessModule('communications')): ?>
+                        <a href="/announcements"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                            </svg>
+                            <span>Comunicados Oficiales</span>
+                        </a>
+                    <?php endif; ?>
+                    <?php if (Auth::canAccessModule('extensions')): ?>
+                        <a href="/extensions"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>Extensión y Eventos</span>
+                        </a>
+                    <?php endif; ?>
+                    <?php if (Auth::canAccessModule('logros')): ?>
+                        <a href="/logros"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
+                            <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            <span>Logros de la Carrera</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
-            <!-- 6. Sistema y Seguridad -->
+            <?php endif; ?>
+
+            <!-- 6. Sistema y Seguridad (solo administradores) -->
+            <?php if (Auth::isAdmin()): ?>
             <div>
                 <div class="flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -270,6 +289,7 @@
                     </a>
                 </div>
             </div>
+            <?php endif; ?>
 
         </nav>
     </aside>
@@ -296,15 +316,27 @@
                 </h1>
 
                 <!-- User Menu -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 sm:gap-4">
                     <?php if (isset($_SESSION['user'])): ?>
+                        <?php
+                        $sessionRole = $_SESSION['user_role'] ?? ($_SESSION['user']['role'] ?? 'user');
+                        $roleLabel = $sessionRole === 'admin' ? 'Administrador' : 'Operador';
+                        ?>
                         <span class="text-sm font-medium text-unsxx-blue-900 hidden sm:block">
-                            <?= htmlspecialchars($_SESSION['user']['name'] ?? 'Usuario') ?>
+                            <?= htmlspecialchars($_SESSION['user_name'] ?? ($_SESSION['user']['name'] ?? 'Usuario')) ?>
                         </span>
                         <span
                             class="px-3 py-1 text-xs font-semibold rounded-full bg-unsxx-yellow-100 text-unsxx-yellow-800 border border-unsxx-yellow-300">
-                            <?= htmlspecialchars($_SESSION['user']['role'] ?? 'user') ?>
+                            <?= htmlspecialchars($roleLabel) ?>
                         </span>
+                        <a href="/password" title="Cambiar contraseña"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-unsxx-blue-700 hover:text-unsxx-blue-900 hover:bg-unsxx-blue-50 rounded-lg transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                            </svg>
+                            <span class="hidden md:inline">Cambiar contraseña</span>
+                        </a>
                         <a href="/logout"
                             class="px-4 py-2 text-sm font-medium text-unsxx-blue-700 hover:text-unsxx-blue-900 transition">
                             Cerrar sesión

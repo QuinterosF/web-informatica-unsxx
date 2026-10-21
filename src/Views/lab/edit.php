@@ -1,6 +1,7 @@
 <?php
 $title = 'Editar Laboratorio - Informática UNSXX';
 $pageTitle = 'Editar Laboratorio';
+$ownerMode = $ownerMode ?? false;
 ob_start();
 ?>
 
@@ -28,17 +29,24 @@ ob_start();
                 <!-- Docente Responsable -->
                 <div>
                     <label for="resp_acad_id" class="block text-sm font-semibold text-gray-700 mb-2">Responsable (Docente) <span class="text-red-500">*</span></label>
-                    <select id="resp_acad_id" name="resp_acad_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-white">
-                        <option value="">Seleccione un docente...</option>
-                        <?php if (!empty($academics)): ?>
-                            <?php foreach ($academics as $acad): ?>
-                                <?php $selected = ($old['resp_acad_id'] ?? $lab['resp_acad_id'] ?? '') == $acad['id_acad'] ? 'selected' : ''; ?>
-                                <option value="<?= $acad['id_acad'] ?>" <?= $selected ?>>
-                                    <?= htmlspecialchars($acad['nom_acad']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
+                    <?php if ($ownerMode): ?>
+                        <div class="w-full rounded-md border border-gray-200 bg-gray-50 py-2 px-3 text-sm text-gray-700">
+                            <?= htmlspecialchars($lab['responsable_nombre'] ?? 'Sin asignar') ?>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Solo un administrador puede reasignar el responsable del laboratorio.</p>
+                    <?php else: ?>
+                        <select id="resp_acad_id" name="resp_acad_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-white">
+                            <option value="">Seleccione un docente...</option>
+                            <?php if (!empty($academics)): ?>
+                                <?php foreach ($academics as $acad): ?>
+                                    <?php $selected = ($old['resp_acad_id'] ?? $lab['resp_acad_id'] ?? '') == $acad['id_acad'] ? 'selected' : ''; ?>
+                                    <option value="<?= $acad['id_acad'] ?>" <?= $selected ?>>
+                                        <?= htmlspecialchars($acad['nom_acad']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    <?php endif; ?>
                 </div>
             </div>
 

@@ -67,10 +67,11 @@
                     <p class="text-sm font-medium">
                         <?php
                             $msg = match($error) {
-                                'empty'   => 'Complete todos los campos.',
-                                'invalid' => 'Credenciales inválidas.',
-                                'expired' => 'Su sesión ha expirado. Inicie sesión nuevamente.',
-                                default   => 'Error desconocido.'
+                                'empty'    => 'Complete todos los campos.',
+                                'invalid'  => 'Credenciales inválidas.',
+                                'disabled' => 'Tu cuenta está desactivada.',
+                                'expired'  => 'Su sesión ha expirado. Inicie sesión nuevamente.',
+                                default    => 'Error desconocido.'
                             };
                             echo htmlspecialchars($msg);
                         ?>

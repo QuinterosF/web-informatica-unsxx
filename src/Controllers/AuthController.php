@@ -29,19 +29,42 @@ class AuthController extends Controller
             $this->redirect('/login?error=invalid');
         }
 
-        $user = User::findByEmail($email);
+        $userModel = new User();
+        $user = $userModel->findByEmail($email);
 
         if ($user && password_verify($password, $user['usu_pass'])) {
+            if ((int) $user['estado'] !== 1) {
+                $this->redirect('/login?error=disabled');
+            }
+
             Session::regenerate();
+
+            $modules = json_decode($user['modulos'] ?? '[]', true);
+            if (!is_array($modules)) {
+                $modules = [];
+            }
+
+            $academicId = $userModel->getAcademicIdByUserId((int) $user['usu_id']);
+            $labIds = $academicId !== null
+                ? $userModel->getLabIdsByAcademicId($academicId)
+                : [];
+
             Session::set('user', [
-                'id'       => $user['usu_id'],
+                'id'       => (int) $user['usu_id'],
                 'name'     => $user['usu_nom'],
                 'email'    => $user['usu_correo'],
-                'role_id'  => $user['rol_id'],
+                'role_id'  => (int) $user['rol_id'],
                 'role'     => $user['rol_nombre'],
                 'logged_at'=> time()
             ]);
-            $this->redirect($user['rol_nombre'] === 'admin' ? '/admin' : '/dashboard');
+            Session::set('user_id', (int) $user['usu_id']);
+            Session::set('user_name', $user['usu_nom']);
+            Session::set('user_role', $user['rol_nombre']);
+            Session::set('user_modules', $modules);
+            Session::set('user_acad_id', $academicId);
+            Session::set('user_lab_ids', $labIds);
+
+            $this->redirect('/dashboard');
         }
 
         $this->redirect('/login?error=invalid');

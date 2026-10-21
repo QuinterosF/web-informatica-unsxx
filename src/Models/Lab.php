@@ -98,6 +98,46 @@ class Lab
     }
 
     /**
+     * Obtiene un subconjunto de laboratorios por ID (para responsables).
+     * @param int[] $ids
+     */
+    public function findByIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(
+            array_map('intval', $ids),
+            static fn (int $id): bool => $id > 0
+        )));
+
+        if (empty($ids)) {
+            return [];
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($ids), '?'));
+
+        $sql = "
+            SELECT 
+                l.id_lab,
+                l.nombre_lab,
+                l.horario_lab,
+                l.activo,
+                l.resp_acad_id,
+                a.id_acad,
+                a.nom_acad AS responsable_nombre,
+                a.email_acad AS responsable_email,
+                (SELECT COUNT(*) FROM laboratorio_galeria g WHERE g.id_lab = l.id_lab) AS total_fotos
+            FROM laboratorio l
+            LEFT JOIN academico a ON l.resp_acad_id = a.id_acad
+            WHERE l.id_lab IN ({$placeholders})
+            ORDER BY l.nombre_lab
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($ids);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
      * Verifica si un nombre de laboratorio ya existe (opcionalmente excluyendo un ID)
      */
     public function nombreExists(string $nombre, ?int $excludeId = null): bool
@@ -147,17 +187,19 @@ class Lab
         }
 
         $horarioLab = $data['horario_lab'] ?? null;
+        $creadoPor = (int) ($data['creado_por'] ?? $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
-            INSERT INTO laboratorio (nombre_lab, resp_acad_id, horario_lab, activo)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO laboratorio (nombre_lab, resp_acad_id, horario_lab, activo, creado_por)
+            VALUES (?, ?, ?, ?, ?)
         ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             $data['nombre_lab'],
             (int)$data['resp_acad_id'],
             $horarioLab,
-            (int)($data['activo'] ?? 1)
+            (int)($data['activo'] ?? 1),
+            $creadoPor
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -195,10 +237,11 @@ class Lab
         }
 
         $horarioLab = $data['horario_lab'] ?? $existing['horario_lab'];
+        $actualizadoPor = (int) ($data['actualizado_por'] ?? $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
 
         $sql = "
             UPDATE laboratorio 
-            SET nombre_lab = ?, resp_acad_id = ?, horario_lab = ?, activo = ?
+            SET nombre_lab = ?, resp_acad_id = ?, horario_lab = ?, activo = ?, actualizado_por = ?
             WHERE id_lab = ?
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -207,6 +250,7 @@ class Lab
             (int)$data['resp_acad_id'],
             $horarioLab,
             (int)($data['activo'] ?? 1),
+            $actualizadoPor,
             $id
         ]);
 
@@ -259,14 +303,16 @@ class Lab
     /**
      * Agrega una nueva foto a la galería del laboratorio
      */
-    public function addPhoto(int $id_lab, string $archivo_url, int $es_portada = 0): bool
+    public function addPhoto(int $id_lab, string $archivo_url, int $es_portada = 0, ?int $subido_por = null): bool
     {
+        $subidoPor = $subido_por ?? (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1);
+
         $sql = "
-            INSERT INTO laboratorio_galeria (id_lab, archivo_url, es_portada)
-            VALUES (?, ?, ?)
+            INSERT INTO laboratorio_galeria (id_lab, archivo_url, es_portada, subido_por)
+            VALUES (?, ?, ?, ?)
         ";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id_lab, $archivo_url, (int)$es_portada]);
+        $stmt->execute([$id_lab, $archivo_url, (int)$es_portada, $subidoPor]);
         return $stmt->rowCount() > 0;
     }
 
