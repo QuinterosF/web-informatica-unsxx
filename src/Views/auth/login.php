@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Ingeniería Informática UNSXX</title>
+    <link rel="icon" type="image/png" href="/assets/img/logo-informatica.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,29 +12,14 @@
                 extend: {
                     colors: {
                         'unsxx-blue': {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                            950: '#172554',
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a', 950: '#172554',
                         },
                         'unsxx-yellow': {
-                            50: '#fefce8',
-                            100: '#fef9c3',
-                            200: '#fef08a',
-                            300: '#fde047',
-                            400: '#facc15',
-                            500: '#eab308',
-                            600: '#ca8a04',
-                            700: '#a16207',
-                            800: '#854d0e',
-                            900: '#713f12',
+                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047',
+                            400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207',
+                            800: '#854d0e', 900: '#713f12',
                         },
                     }
                 }
@@ -46,12 +32,10 @@
         <!-- Decorative top accent bar -->
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-unsxx-yellow-400 via-unsxx-yellow-300 to-unsxx-yellow-400"></div>
 
-        <!-- Logo/Brand -->
+        <!-- Logo/Brand con Escudo Oficial (RF-03) -->
         <div class="text-center mb-8 relative z-10">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-unsxx-blue-800 to-unsxx-blue-600 mb-4 shadow-lg shadow-unsxx-blue-900/30">
-                <svg class="w-8 h-8 text-unsxx-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white p-2 mb-4 shadow-lg shadow-unsxx-blue-900/20 border border-unsxx-blue-100">
+                <img src="/assets/img/logo-informatica.png" alt="Escudo Ingeniería Informática" class="w-full h-full object-contain">
             </div>
             <h1 class="text-2xl font-bold text-unsxx-blue-900 tracking-tight">Ingeniería Informática</h1>
             <p class="text-unsxx-blue-600 mt-1 text-sm">Universidad Nacional "Siglo XX"</p>
@@ -66,7 +50,7 @@
             if (strlen($cleanPhone) === 8) {
                 $cleanPhone = '591' . $cleanPhone;
             }
-            $waText = urlencode("Hola, solicité en el sistema de Informática - UNSXX la restauración de mi contraseña para la cuenta: " . $reqEmail);
+            $waText = urlencode("Hola Soporte Técnico (Informática UNSXX), solicité en el sistema la restauración de mi contraseña para la cuenta: " . $reqEmail);
             $waUrl = !empty($cleanPhone)
                 ? "https://wa.me/{$cleanPhone}?text={$waText}"
                 : "https://wa.me/?text={$waText}";
@@ -82,13 +66,13 @@
                             Se envió una notificación al Panel del Administrador para que genere tu nueva contraseña temporal.
                         </p>
                         <div class="mt-3 pt-2.5 border-t border-green-200/80 flex flex-col gap-1.5">
-                            <span class="text-[11px] text-green-700 font-medium">Opcional: Si deseas atención inmediata, puedes avisar por WhatsApp:</span>
+                            <span class="text-[11px] text-green-700 font-medium">Opcional: Si deseas atención inmediata, puedes contactar a Soporte Técnico:</span>
                             <a href="<?= htmlspecialchars($waUrl) ?>" target="_blank" rel="noopener noreferrer"
                                 class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold text-xs transition-colors shadow-sm w-full">
                                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
                                 </svg>
-                                Contactar al administrador por WhatsApp (Opcional)
+                                Contactar a Soporte Técnico por WhatsApp (Opcional)
                             </a>
                         </div>
                     </div>
@@ -154,7 +138,7 @@
                 </div>
             </div>
 
-            <!-- Password Field -->
+            <!-- Password Field con Ojito SVG (RF-07) -->
             <div>
                 <div class="flex items-center justify-between mb-1.5">
                     <label for="password" class="block text-sm font-semibold text-unsxx-blue-800">Contraseña</label>
@@ -179,8 +163,21 @@
                         required
                         autocomplete="current-password"
                         placeholder="••••••••"
-                        class="w-full pl-10 pr-4 py-3 border border-unsxx-blue-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-unsxx-yellow-400 focus:border-unsxx-yellow-400 transition-all duration-200 placeholder:text-unsxx-blue-300"
+                        class="w-full pl-10 pr-11 py-3 border border-unsxx-blue-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-unsxx-yellow-400 focus:border-unsxx-yellow-400 transition-all duration-200 placeholder:text-unsxx-blue-300"
                     >
+                    <button type="button" onclick="togglePasswordVisibility('password', this)"
+                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-unsxx-blue-400 hover:text-unsxx-blue-700 cursor-pointer"
+                        title="Mostrar u ocultar contraseña">
+                        <!-- Ojo Abierto -->
+                        <svg class="w-5 h-5 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <!-- Ojo Tachado -->
+                        <svg class="w-5 h-5 eye-closed hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -218,7 +215,7 @@
 
             <form method="POST" action="/forgot-password" class="p-6 space-y-4">
                 <p class="text-xs text-gray-600 leading-relaxed">
-                    Ingresa el correo electrónico de tu cuenta. El sistema notificará al <strong>Administrador General</strong> para que genere tu nueva contraseña temporal.
+                    Ingresa el correo electrónico de tu cuenta. El sistema notificará a <strong>Soporte Técnico / Administración</strong> para que genere tu nueva contraseña temporal.
                 </p>
 
                 <div>
@@ -255,6 +252,21 @@
     </div>
 
     <script>
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const openIcon = btn.querySelector('.eye-open');
+            const closedIcon = btn.querySelector('.eye-closed');
+            if (input.type === 'password') {
+                input.type = 'text';
+                openIcon.classList.add('hidden');
+                closedIcon.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                openIcon.classList.remove('hidden');
+                closedIcon.classList.add('hidden');
+            }
+        }
+
         function openForgotModal() {
             const loginEmail = document.getElementById('email').value.trim();
             if (loginEmail) {

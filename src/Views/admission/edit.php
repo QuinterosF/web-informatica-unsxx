@@ -60,70 +60,78 @@ ob_start();
                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all resize-y"><?= htmlspecialchars($old['req_adm'] ?? $admission['req_adm'] ?? '') ?></textarea>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <!-- Gestión Académica -->
-                <div>
-                    <label for="gestion" class="block text-sm font-semibold text-gray-700 mb-2">Gestión Académica <span class="text-red-500">*</span></label>
-                    <input type="number" id="gestion" name="gestion" required min="2020" max="2100"
-                        value="<?= htmlspecialchars($old['gestion'] ?? $admission['gestion'] ?? date('Y')) ?>"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border bg-white">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Gestión Académica -->
+                    <div>
+                        <label for="gestion" class="block text-sm font-semibold text-gray-700 mb-2">Gestión Académica <span class="text-red-500">*</span></label>
+                        <input type="number" id="gestion" name="gestion" required min="2020" max="2100"
+                            value="<?= htmlspecialchars($old['gestion'] ?? $admission['gestion'] ?? date('Y')) ?>"
+                            class="w-full rounded-lg border-gray-300 shadow-xs focus:border-unsxx-blue-500 focus:ring-unsxx-blue-500 py-2 px-3 border bg-white">
+                    </div>
+
+                    <!-- Estado (Activo/Oculto) -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Visibilidad en el Portal</label>
+                        <label class="inline-flex items-center cursor-pointer mt-1">
+                            <?php $isChecked = isset($old['estado']) ? $old['estado'] : ($admission['estado'] ?? 1); ?>
+                            <input type="checkbox" name="estado" value="1" class="sr-only peer" <?= $isChecked ? 'checked' : '' ?>>
+                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            <span class="ms-3 text-sm font-medium text-gray-700 peer-checked:text-green-600">Activo / Visible</span>
+                        </label>
+                    </div>
                 </div>
 
-                <!-- Estado (Activo/Oculto) -->
+                <!-- Imagen / Afiche Oficial (RF-08) -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Visibilidad en el Portal</label>
-                    <label class="inline-flex items-center cursor-pointer mt-1">
-                        <?php $isChecked = isset($old['estado']) ? $old['estado'] : ($admission['estado'] ?? 1); ?>
-                        <input type="checkbox" name="estado" value="1" class="sr-only peer" <?= $isChecked ? 'checked' : '' ?>>
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-700 peer-checked:text-green-600">Activo / Visible</span>
-                    </label>
-                </div>
-            </div>
-
-                <!-- Imagen / Afiche Oficial -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-800 mb-3">
-                        <i class="fas fa-image text-blue-500 mr-2"></i> Afiche Promocional
+                    <label class="flex items-center gap-2 text-sm font-bold text-gray-800 mb-2">
+                        <svg class="w-4 h-4 text-unsxx-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Afiche Promocional
                     </label>
                     
                     <?php 
-                    // 1. Asignamos la imagen (si no hay, usamos default.png)
-                    $fotoAfiche = !empty($admission['img_adm']) ? $admission['img_adm'] : 'default.png';
-                    
-                    // 2. NUEVA CONDICIÓN: Es default si está vacío O si literalmente dice 'default.png'
-                    $isDefault = empty($admission['img_adm']) || $admission['img_adm'] === 'default.png';
+                    $rawImg = trim((string)($admission['img_adm'] ?? ''));
+                    $hasRealImage = ($rawImg !== '' && strtolower($rawImg) !== 'default.png');
+                    $fotoAfiche = $hasRealImage ? $rawImg : 'default.png';
                     ?>
                     
-                    <div class="mb-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
-                        <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
-                            AFICHE ACTUAL <?= $isDefault ? '(POR DEFECTO)' : '' ?>:
-                        </p>
-                        <div class="flex items-start gap-4">
-                            <img src="/uploads/img/admission/<?= htmlspecialchars($fotoAfiche) ?>" alt="Afiche" class="w-24 h-24 object-contain rounded shadow-sm border border-gray-200 bg-gray-50 p-1">
-                            <div class="flex flex-col justify-between py-1">
-                                <a href="/uploads/img/admission/<?= htmlspecialchars($fotoAfiche) ?>" target="_blank" class="text-sm text-blue-600 hover:underline font-medium break-all line-clamp-2">
-                                    Ver afiche <?= $isDefault ? 'por defecto' : 'original' ?>
-                                </a>
-                                
-                                <?php if (!$isDefault): ?>
-                                <!-- Si es una imagen real, mostramos el checkbox para eliminar -->
-                                <label class="inline-flex items-center mt-3 cursor-pointer group">
-                                    <input type="checkbox" name="remove_img_adm" value="1" class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer">
-                                    <span class="ml-2 text-xs font-semibold text-red-600 group-hover:text-red-800 transition-colors">Eliminar afiche actual</span>
-                                </label>
-                                <?php else: ?>
-                                <!-- Si es default.png, mostramos un badge amigable sin opción de eliminar -->
-                                <span class="inline-flex items-center mt-3 text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200 w-max">
-                                    <i class="fas fa-info-circle mr-1.5 text-blue-500"></i> Imagen por defecto
-                                </span>
-                                <?php endif; ?>
+                    <?php if ($hasRealImage): ?>
+                        <div class="mb-4 flex flex-col items-start gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                            <div class="flex items-center gap-4">
+                                <img src="/uploads/img/admission/<?= htmlspecialchars($fotoAfiche) ?>" alt="Afiche actual"
+                                     class="w-24 h-24 object-contain rounded-lg shadow-xs border bg-white p-1">
+                                <div class="text-sm text-gray-600">
+                                    <p class="font-bold text-gray-800">Afiche actual cargado en el servidor</p>
+                                    <p class="text-xs mt-0.5">Si seleccionas un nuevo archivo abajo, este afiche se reemplazará automáticamente.</p>
+                                    <a href="/uploads/img/admission/<?= htmlspecialchars($fotoAfiche) ?>" target="_blank"
+                                       class="inline-flex items-center gap-1 text-xs font-bold text-unsxx-blue-600 hover:underline mt-1.5">
+                                        Ver afiche en tamaño completo ↗
+                                    </a>
+                                </div>
                             </div>
+
+                            <!-- Checkbox destacado para eliminar el afiche actual -->
+                            <label class="inline-flex items-center cursor-pointer bg-red-50 px-3.5 py-2 rounded-lg border border-red-200 hover:bg-red-100 transition-colors w-full sm:w-auto">
+                                <input type="checkbox" id="eliminar_afiche" name="eliminar_afiche" value="1"
+                                       class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer">
+                                <span class="ml-2 text-xs font-bold text-red-700">
+                                    Eliminar afiche actual permanentemente (dejar modalidad sin afiche)
+                                </span>
+                            </label>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <div class="mb-3 p-3 bg-blue-50/50 border border-blue-100 rounded-lg text-xs text-gray-600 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-unsxx-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Actualmente esta modalidad no tiene un afiche personalizado (se muestra la imagen por defecto).</span>
+                        </div>
+                    <?php endif; ?>
                     
-                    <label for="img_adm" class="block text-xs font-medium text-gray-600 mb-1">Subir nuevo afiche (JPG, PNG):</label>
-                    <input type="file" id="img_adm" name="img_adm" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg bg-white transition-all cursor-pointer">
+                    <label for="img_adm" class="block text-xs font-medium text-gray-600 mb-1">Subir nuevo afiche (JPG, PNG, WEBP):</label>
+                    <input type="file" id="img_adm" name="img_adm" accept="image/*"
+                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-unsxx-blue-50 file:text-unsxx-blue-700 hover:file:bg-unsxx-blue-100 border border-gray-300 rounded-lg bg-white transition-all cursor-pointer">
                 </div>
 
             </div>
@@ -133,7 +141,7 @@ ob_start();
                 <a href="/admissions" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
                     Cancelar
                 </a>
-                <button type="submit" class="px-6 py-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold rounded-lg shadow-sm transition-colors">
+                <button type="submit" class="px-6 py-2 bg-unsxx-yellow-400 hover:bg-unsxx-yellow-500 text-unsxx-blue-900 font-bold rounded-lg shadow-sm transition-colors cursor-pointer">
                     Actualizar Proceso
                 </button>
             </div>
@@ -141,6 +149,25 @@ ob_start();
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkEliminar = document.getElementById('eliminar_afiche');
+        const inputAfiche = document.getElementById('img_adm');
+        if (checkEliminar && inputAfiche) {
+            checkEliminar.addEventListener('change', function() {
+                if (this.checked) {
+                    inputAfiche.value = '';
+                    inputAfiche.disabled = true;
+                    inputAfiche.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    inputAfiche.disabled = false;
+                    inputAfiche.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        }
+    });
+</script>
 
 <?php
 $content = ob_get_clean();

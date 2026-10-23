@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Core\FileUploader;
 use App\Models\Extension;
@@ -120,12 +121,16 @@ class ExtensionController extends Controller
     public function destroy(int $id): void
     {
         try {
+            $event = $this->model->findById($id);
             $photos = $this->model->getGallery($id);
             foreach ($photos as $photo) {
                 FileUploader::delete($photo['nom_foto'], 'img/extension');
             }
 
             $deleted = $this->model->delete($id);
+            if ($deleted) {
+                AuditLogger::logDelete('Extensión', $id, (string) ($event['nom_ext'] ?? 'Evento #' . $id));
+            }
             $_SESSION[$deleted ? 'success' : 'error'] = $deleted
                 ? 'Actividad de extensión eliminada correctamente'
                 : 'La actividad de extensión no existe';
@@ -298,8 +303,10 @@ class ExtensionController extends Controller
         $photo = $this->model->findPhotoById($id_foto);
 
         if ($photo && (int) $photo['id_ext'] === $id_ext) {
+            $event = $this->model->findById($id_ext);
             FileUploader::delete($photo['nom_foto'], 'img/extension');
             $this->model->deletePhoto($id_foto);
+            AuditLogger::logDelete('Extensión', $id_foto, 'Foto de galería: ' . ($event['nom_ext'] ?? 'Evento #' . $id_ext));
             $_SESSION['success'] = 'Foto eliminada correctamente';
         } else {
             $_SESSION['error'] = 'La foto no existe o no pertenece a este evento';

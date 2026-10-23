@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Config\Database;
 use App\Core\Controller;
 use App\Core\Session;
+use App\Models\Phone;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -24,25 +24,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Primer celular activo, limpio para usarlo en enlaces wa.me.
+     * Teléfono oficial de soporte, limpio para usarlo en enlaces wa.me.
      */
     private function getContactPhone(): string
     {
-        $stmt = Database::getInstance()->prepare("
-            SELECT num_cel
-            FROM celular
-            WHERE estado = 1
-            ORDER BY (
-                nom_cel LIKE '%Sistema%'
-                OR nom_cel LIKE '%Admin%'
-                OR nom_cel LIKE '%Soporte%'
-                OR nom_cel LIKE '%Direcci%'
-            ) DESC, id_cel ASC
-            LIMIT 1
-        ");
-        $stmt->execute();
-
-        $phone = preg_replace('/\D+/', '', (string) $stmt->fetchColumn()) ?? '';
+        $supportPhone = (new Phone())->getSupportPhone();
+        $phone = preg_replace('/\D+/', '', (string) ($supportPhone['num_cel'] ?? '')) ?? '';
 
         if ($phone !== '' && strlen($phone) === 8) {
             $phone = '591' . $phone;

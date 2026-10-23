@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\FileUploader;
@@ -79,6 +80,22 @@ class LabController extends Controller
             ];
         } catch (\Exception $e) {
             return ['credentials' => null, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Sincroniza el estado de acceso del responsable tras cambios en sus laboratorios.
+     */
+    private function syncResponsibleStatus(int $acadId): void
+    {
+        if ($acadId <= 0) {
+            return;
+        }
+
+        try {
+            $this->userModel->syncOperatorStatusForAcademic($acadId);
+        } catch (\Exception $e) {
+            error_log('No se pudo sincronizar el estado del responsable: ' . $e->getMessage());
         }
     }
 
@@ -182,6 +199,7 @@ class LabController extends Controller
         try {
             $id = $this->model->create($data);
             $sync = $this->syncResponsibleAccount((int) $data['resp_acad_id']);
+            $this->syncResponsibleStatus((int) $data['resp_acad_id']);
 
             if ($sync['error'] !== null) {
                 $_SESSION['error'] = "Laboratorio creado (ID: {$id}), pero no se pudo crear la cuenta del responsable: " . $sync['error'];
@@ -252,6 +270,8 @@ class LabController extends Controller
             exit;
         }
 
+        $oldRespAcadId = (int) ($existing['resp_acad_id'] ?? 0);
+
         // El responsable nunca puede reasignar su propio laboratorio a otro docente.
         $respAcadId = $this->ownerMode
             ? (int) ($existing['resp_acad_id'] ?? 0)
@@ -317,7 +337,9 @@ class LabController extends Controller
 
         try {
             $this->model->update($id, $data);
+            $this->syncResponsibleStatus($oldRespAcadId);
             $sync = $this->syncResponsibleAccount((int) $data['resp_acad_id']);
+            $this->syncResponsibleStatus((int) $data['resp_acad_id']);
 
             if ($sync['error'] !== null) {
                 $_SESSION['error'] = 'Laboratorio actualizado, pero no se pudo sincronizar la cuenta del responsable: ' . $sync['error'];
@@ -386,6 +408,8 @@ class LabController extends Controller
             $deleted = $this->model->delete($id);
 
             if ($deleted) {
+                AuditLogger::logDelete('Laboratorios', $id, (string) ($lab['nombre_lab'] ?? 'Laboratorio #' . $id));
+                $this->syncResponsibleStatus((int) ($lab['resp_acad_id'] ?? 0));
                 $_SESSION['success'] = 'Laboratorio eliminado correctamente';
             } else {
                 $_SESSION['error'] = 'El laboratorio no existe';
@@ -489,10 +513,12 @@ class LabController extends Controller
 
         // La foto debe pertenecer al laboratorio indicado en la URL.
         if ($photo && (int) $photo['id_lab'] === $id_lab) {
+            $lab = $this->model->findById($id_lab);
             // Borrar archivo físico
             FileUploader::delete($photo['archivo_url'], 'img/laboratorios');
             // Borrar de BD
             $this->model->deletePhoto($id_foto);
+            AuditLogger::logDelete('Laboratorios', $id_foto, 'Foto de galería: ' . ($lab['nombre_lab'] ?? 'Laboratorio #' . $id_lab));
             $_SESSION['success'] = 'Foto eliminada correctamente';
         } else {
             $_SESSION['error'] = 'Foto no encontrada para este laboratorio';

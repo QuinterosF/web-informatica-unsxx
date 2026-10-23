@@ -66,6 +66,7 @@ class UserController extends Controller
                 $_SESSION['temp_credentials'] = [
                     'name' => $data['usu_nom'],
                     'email' => $data['usu_correo'],
+                    'phone' => $data['usu_cel'] ?? '',
                     'password' => $plainPassword,
                 ];
             }
@@ -115,16 +116,6 @@ class UserController extends Controller
         try {
             $data = $this->collectData();
             $this->model->update($id, $data);
-
-            // Solo mostrar credenciales si el administrador definió una nueva clave.
-            $plainPassword = (string) ($data['password'] ?? '');
-            if ($plainPassword !== '') {
-                $_SESSION['temp_credentials'] = [
-                    'name' => $data['usu_nom'],
-                    'email' => $data['usu_correo'],
-                    'password' => $plainPassword,
-                ];
-            }
 
             $_SESSION['success'] = 'Usuario actualizado correctamente.';
             $this->redirect('/users');
@@ -218,7 +209,7 @@ class UserController extends Controller
         $_SESSION['temp_credentials'] = [
             'name' => $user['usu_nom'],
             'email' => $user['usu_correo'],
-            'phone' => $user['cel_acad'] ?? '',
+            'phone' => $user['cel_acad'] ?: ($user['usu_cel'] ?? ''),
             'password' => $plainPassword,
         ];
         $_SESSION['success'] = 'Contraseña restablecida correctamente. Comparte la clave temporal con el usuario.';
@@ -297,6 +288,7 @@ class UserController extends Controller
             'rol_id' => (int) ($_POST['rol_id'] ?? 0),
             'modulos' => isset($_POST['modulos']) && is_array($_POST['modulos']) ? $_POST['modulos'] : [],
             'id_acad' => !empty($_POST['id_acad']) ? (int) $_POST['id_acad'] : null,
+            'usu_cel' => array_key_exists('usu_cel', $_POST) ? trim((string) $_POST['usu_cel']) : null,
             // Las vistas usan "usu_pass"; se acepta "password" por compatibilidad.
             'password' => (string) ($_POST['usu_pass'] ?? $_POST['password'] ?? ''),
         ];

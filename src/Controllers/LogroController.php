@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Core\FileUploader;
 use App\Models\Logro;
@@ -165,6 +166,7 @@ class LogroController extends Controller
             }
 
             $this->model->delete($id);
+            AuditLogger::logDelete('Logros', $id, (string) ($logro['nom_log'] ?? 'Logro #' . $id));
             $_SESSION['success'] = 'Logro eliminado correctamente';
         } catch (\Exception $e) {
             $_SESSION['error'] = 'Error al eliminar: ' . $e->getMessage();

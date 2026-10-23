@@ -36,6 +36,7 @@ class PhoneController extends Controller
             'nom_cel' => trim($_POST['nom_cel'] ?? ''),
             'num_cel' => trim($_POST['num_cel'] ?? ''),
             'icono' => trim($_POST['icono'] ?? 'fab fa-whatsapp'),
+            'es_soporte' => isset($_POST['es_soporte']) ? 1 : 0,
             'estado' => isset($_POST['estado']) ? 1 : 0,
         ];
 
@@ -86,6 +87,7 @@ class PhoneController extends Controller
             'nom_cel' => trim($_POST['nom_cel'] ?? ''),
             'num_cel' => trim($_POST['num_cel'] ?? ''),
             'icono' => trim($_POST['icono'] ?? 'fab fa-whatsapp'),
+            'es_soporte' => isset($_POST['es_soporte']) ? 1 : 0,
             'estado' => isset($_POST['estado']) ? 1 : 0,
         ];
 
@@ -104,6 +106,26 @@ class PhoneController extends Controller
                 'old' => $data
             ]);
         }
+    }
+
+    /**
+     * Marca un celular como teléfono oficial de soporte técnico
+     * POST /directory/phones/{id}/support
+     */
+    public function setSupport(int $id): void
+    {
+        try {
+            if ($this->model->setAsSupport($id)) {
+                $_SESSION['success'] = 'Teléfono de soporte técnico actualizado correctamente';
+            } else {
+                $_SESSION['error'] = 'El celular no existe';
+            }
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Error al asignar soporte: ' . $e->getMessage();
+        }
+
+        header('Location: /directory');
+        exit;
     }
 
     /**

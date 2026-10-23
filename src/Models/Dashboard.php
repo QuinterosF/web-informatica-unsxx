@@ -452,6 +452,27 @@ class Dashboard
             WHERE i.updated_at IS NOT NULL
               AND i.updated_at > '2000-01-01 00:00:00'
 
+            UNION ALL
+
+            SELECT ae.modulo, 'Eliminado',
+                   ae.titulo_registro,
+                   COALESCE(u.usu_nom, 'Sistema'),
+                   ae.eliminado_en,
+                   CASE ae.modulo
+                       WHEN 'Documentos' THEN '/documents'
+                       WHEN 'Comunicados' THEN '/announcements'
+                       WHEN 'Extensión' THEN '/extensions'
+                       WHEN 'Logros' THEN '/logros'
+                       WHEN 'Académicos' THEN '/academics'
+                       WHEN 'Laboratorios' THEN '/labs'
+                       WHEN 'Portadas' THEN '/portadas'
+                       WHEN 'Menciones' THEN '/mentions'
+                       ELSE '/dashboard'
+                   END
+            FROM auditoria_eliminacion ae
+            LEFT JOIN usuario u ON u.usu_id = ae.eliminado_por
+            WHERE ae.eliminado_en IS NOT NULL
+
             ORDER BY fecha DESC
             LIMIT {$limit}
         ";

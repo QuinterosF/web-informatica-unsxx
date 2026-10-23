@@ -239,6 +239,8 @@ $router->post('/directory/phones/{id}/edit', [PhoneController::class, 'update'])
     ->middleware($moduleGuard('redes'));
 $router->post('/directory/phones/{id}', [PhoneController::class, 'update'])
     ->middleware($moduleGuard('redes'));
+$router->post('/directory/phones/{id}/support', [PhoneController::class, 'setSupport'])
+    ->middleware($moduleGuard('redes'));
 $router->post('/directory/phones/{id}/delete', [PhoneController::class, 'destroy'])
     ->middleware($moduleGuard('redes'));
 

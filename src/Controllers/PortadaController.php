@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Core\FileUploader;
 use App\Models\Portada;
@@ -86,6 +87,7 @@ class PortadaController extends Controller
             FileUploader::delete($photo['archivo_url'], 'img/portadas');
             // Borrar de BD
             $this->model->delete($id);
+            AuditLogger::logDelete('Portadas', $id, (string) (!empty($photo['titulo']) ? $photo['titulo'] : $photo['archivo_url']));
             $_SESSION['success'] = 'Foto eliminada correctamente';
         } else {
             $_SESSION['error'] = 'Foto no encontrada';

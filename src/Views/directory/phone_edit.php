@@ -43,11 +43,19 @@ if (!in_array($currentIcon, $phoneIcons)) { $phoneIcons[] = $currentIcon; } // A
             <input type="hidden" name="icono" id="icono_input" value="<?= htmlspecialchars($currentIcon) ?>">
         </div>
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="inline-flex items-center cursor-pointer">
                 <input type="checkbox" name="estado" value="1" class="sr-only peer" <?= $phone['estado'] ? 'checked' : '' ?>>
                 <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                 <span class="ms-3 text-sm font-medium text-gray-700 peer-checked:text-green-600">Teléfono Activo (Visible)</span>
+            </label>
+        </div>
+
+        <div class="mb-6">
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="es_soporte" value="1" class="sr-only peer" <?= !empty($phone['es_soporte']) ? 'checked' : '' ?>>
+                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-700 peer-checked:text-unsxx-blue-700">Teléfono oficial de soporte (se muestra en el Login)</span>
             </label>
         </div>
 

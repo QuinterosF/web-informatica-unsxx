@@ -54,7 +54,7 @@ class AdmissionController extends Controller
             'gestion' => (int)($_POST['gestion'] ?? date('Y')),
             'estado' => isset($_POST['estado']) ? 1 : 0,
             'actualizado_por' => (int)($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1),
-            'img_adm' => 'default.png'
+            'img_adm' => null
         ];
 
         try {
@@ -78,7 +78,7 @@ class AdmissionController extends Controller
             exit;
 
         } catch (\Exception $e) {
-            if (isset($data['img_adm']) && $data['img_adm'] !== 'default.png') {
+            if (!empty($data['img_adm']) && $data['img_adm'] !== 'default.png') {
                 \App\Core\FileUploader::delete($data['img_adm'], 'img/admission');
             }
             $_SESSION['error'] = $e->getMessage();
@@ -132,8 +132,8 @@ class AdmissionController extends Controller
             'actualizado_por' => (int)($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 1),
         ];
 
-        $imgAdm = $existing['img_adm'] ?: 'default.png';
-        $removeAfiche = isset($_POST['remove_img_adm']) && $_POST['remove_img_adm'] === '1';
+        $imgAdm = $existing['img_adm'] ?: null;
+        $removeAfiche = isset($_POST['eliminar_afiche']) && $_POST['eliminar_afiche'] === '1';
 
         if (isset($_FILES['img_adm']) && $_FILES['img_adm']['error'] === UPLOAD_ERR_OK) {
             $uploaded = \App\Core\FileUploader::uploadImage($_FILES['img_adm'], 'admission');
@@ -156,9 +156,9 @@ class AdmissionController extends Controller
         } elseif ($removeAfiche) {
             // Candado de seguridad
             if ($imgAdm && $imgAdm !== 'default.png') {
-                \App\Core\FileUploader::delete($imgAdm, 'img/admission');
+                $this->deletePoster($imgAdm);
             }
-            $imgAdm = 'default.png'; // Guardamos explícitamente el texto
+            $imgAdm = null;
         }
 
         $data['img_adm'] = $imgAdm;

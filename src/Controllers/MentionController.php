@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Core\FileUploader;
 use App\Models\Mention;
@@ -218,6 +219,7 @@ class MentionController extends Controller
                 if ($existing && $existing['escudo_url'] && $existing['escudo_url'] !== 'default.png') {
                     $this->deleteShield($existing['escudo_url']);
                 }
+                AuditLogger::logDelete('Menciones', $id, (string) ($existing['nombre'] ?? 'Mención #' . $id));
                 $_SESSION['success'] = 'Mención/Instituto eliminado correctamente';
             } else {
                 $_SESSION['error'] = 'La mención/instituto no existe';

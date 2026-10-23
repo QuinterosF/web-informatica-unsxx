@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Models\Academic;
 
@@ -209,6 +210,7 @@ class AcademicController extends Controller
                 if (!empty($academic['foto_acad']) && $academic['foto_acad'] !== 'default.png') {
                     $this->deletePhoto($academic['foto_acad']);
                 }
+                AuditLogger::logDelete('Académicos', $id, (string) ($academic['nom_acad'] ?? 'Docente #' . $id));
                 $_SESSION['success'] = 'Docente eliminado correctamente';
             } else {
                 $_SESSION['error'] = 'El docente no existe';

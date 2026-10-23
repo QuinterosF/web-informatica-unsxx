@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Core\FileUploader;
 use App\Models\Announcement;
@@ -243,9 +244,11 @@ class AnnouncementController extends Controller
     public function destroy(int $id): void
     {
         try {
+            $existing = $this->model->findById($id);
             $deleted = $this->model->delete($id);
 
             if ($deleted) {
+                AuditLogger::logDelete('Comunicados', $id, (string) ($existing['nom_com'] ?? 'Comunicado #' . $id));
                 $_SESSION['success'] = 'Comunicado eliminado correctamente';
             } else {
                 $_SESSION['error'] = 'El comunicado no existe';

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AuditLogger;
 use App\Core\Controller;
 use App\Core\FileUploader;
 use App\Models\OfficialDocument;
@@ -211,6 +212,7 @@ class OfficialDocumentController extends Controller
             $deleted = $this->model->delete($id);
 
             if ($deleted) {
+                AuditLogger::logDelete('Documentos', $id, (string) ($existing['titulo'] ?? 'Documento #' . $id));
                 $_SESSION['success'] = 'Documento eliminado correctamente';
             } else {
                 $_SESSION['error'] = 'El documento no existe';

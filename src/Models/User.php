@@ -24,6 +24,11 @@ class User
         'logros'         => 'Logros de la Carrera',
     ];
 
+    /**
+     * Cuenta raíz institucional: su rol y estado no pueden modificarse.
+     */
+    private const ROOT_USER_ID = 1;
+
     private PDO $pdo;
 
     public function __construct()
@@ -57,7 +62,7 @@ class User
     public function findAll(): array
     {
         $sql = "
-            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.modulos, u.estado,
+            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.usu_cel, u.modulos, u.estado,
                    u.solicitud_reset,
                    ur.rol_id, r.rol_nombre,
                    a.id_acad, a.nom_acad, a.cel_acad,
@@ -67,7 +72,7 @@ class User
             LEFT JOIN rol r ON ur.rol_id = r.rol_id
             LEFT JOIN academico a ON a.usu_id = u.usu_id
             LEFT JOIN laboratorio l ON l.resp_acad_id = a.id_acad
-            GROUP BY u.usu_id, u.usu_nom, u.usu_correo, u.modulos, u.estado,
+            GROUP BY u.usu_id, u.usu_nom, u.usu_correo, u.usu_cel, u.modulos, u.estado,
                      u.solicitud_reset, ur.rol_id, r.rol_nombre, a.id_acad, a.nom_acad, a.cel_acad
             ORDER BY u.solicitud_reset DESC, u.usu_nom ASC
         ";
@@ -89,7 +94,7 @@ class User
     public function findById(int $id): ?array
     {
         $sql = "
-            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.modulos, u.estado,
+            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.usu_cel, u.modulos, u.estado,
                    ur.rol_id, r.rol_nombre,
                    a.id_acad, a.nom_acad, a.cel_acad
             FROM usuario u
@@ -159,7 +164,8 @@ class User
     public function getPendingResetUsers(): array
     {
         $sql = "
-            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.actualizado_en, a.cel_acad
+            SELECT u.usu_id, u.usu_nom, u.usu_correo, u.actualizado_en,
+                   COALESCE(NULLIF(a.cel_acad, ''), u.usu_cel) AS cel_acad
             FROM usuario u
             LEFT JOIN academico a ON a.usu_id = u.usu_id
             WHERE u.estado = 1
@@ -186,7 +192,7 @@ class User
     {
         if ($includeUserId !== null) {
             $sql = "
-                SELECT id_acad, nom_acad, email_acad
+                SELECT id_acad, nom_acad, email_acad, cel_acad
                 FROM academico
                 WHERE usu_id IS NULL OR usu_id = ?
                 ORDER BY nom_acad ASC
@@ -195,7 +201,7 @@ class User
             $stmt->execute([$includeUserId]);
         } else {
             $sql = "
-                SELECT id_acad, nom_acad, email_acad
+                SELECT id_acad, nom_acad, email_acad, cel_acad
                 FROM academico
                 WHERE usu_id IS NULL
                 ORDER BY nom_acad ASC
@@ -257,13 +263,13 @@ class User
      * crea la cuenta (o vincula una existente por correo) y devuelve las
      * credenciales temporales cuando la cuenta fue creada en este momento.
      *
-     * @return array{name: string, email: string, password: string}|null
+     * @return array{name: string, email: string, phone: string, password: string}|null
      * @throws \Exception si falla la transacción
      */
     public function ensureLabResponsibleUser(int $idAcad): ?array
     {
         $stmt = $this->pdo->prepare("
-            SELECT id_acad, nom_acad, email_acad, usu_id
+            SELECT id_acad, nom_acad, email_acad, cel_acad, usu_id
             FROM academico
             WHERE id_acad = ?
             LIMIT 1
@@ -294,18 +300,21 @@ class User
                 if ($exists !== false) {
                     $this->pdo->prepare("UPDATE usuario SET estado = 1 WHERE usu_id = ?")
                         ->execute([$linkedUserId]);
+
+                    $this->syncAcademicPhone($linkedUserId, $idAcad, (string) ($academic['cel_acad'] ?? ''));
+
                     $this->pdo->commit();
                     return null;
                 }
             }
 
             // Buscar una cuenta existente por correo para evitar duplicados.
-            $stmt = $this->pdo->prepare("SELECT usu_id FROM usuario WHERE usu_correo = ? LIMIT 1");
+            $stmt = $this->pdo->prepare("SELECT usu_id, usu_cel FROM usuario WHERE usu_correo = ? LIMIT 1");
             $stmt->execute([$email]);
-            $existingUserId = $stmt->fetchColumn();
+            $existingUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($existingUserId !== false) {
-                $userId = (int) $existingUserId;
+            if ($existingUser !== false) {
+                $userId = (int) $existingUser['usu_id'];
                 $this->pdo->prepare("UPDATE usuario SET estado = 1 WHERE usu_id = ?")
                     ->execute([$userId]);
 
@@ -316,6 +325,8 @@ class User
                 $this->pdo->prepare("UPDATE academico SET usu_id = ? WHERE id_acad = ?")
                     ->execute([$userId, $idAcad]);
 
+                $this->syncAcademicPhone($userId, $idAcad, (string) ($academic['cel_acad'] ?? ''));
+
                 $this->pdo->commit();
                 return null;
             }
@@ -323,12 +334,13 @@ class User
             $plainPassword = 'Infor' . date('Y') . '*';
 
             $stmt = $this->pdo->prepare("
-                INSERT INTO usuario (usu_nom, usu_correo, usu_pass, modulos, estado)
-                VALUES (?, ?, ?, NULL, 1)
+                INSERT INTO usuario (usu_nom, usu_correo, usu_cel, usu_pass, modulos, estado)
+                VALUES (?, ?, ?, ?, NULL, 1)
             ");
             $stmt->execute([
                 $academic['nom_acad'],
                 $email,
+                $academic['cel_acad'] ?: null,
                 password_hash($plainPassword, PASSWORD_DEFAULT),
             ]);
 
@@ -343,6 +355,7 @@ class User
             return [
                 'name' => $academic['nom_acad'],
                 'email' => $email,
+                'phone' => $academic['cel_acad'] ?? '',
                 'password' => $plainPassword,
             ];
         } catch (\Exception $e) {
@@ -368,27 +381,45 @@ class User
             throw new \Exception("El académico seleccionado no está disponible");
         }
 
+        $academicPhone = $academicId !== null ? $this->getAcademicPhone($academicId) : '';
+        $phone = trim((string) ($data['usu_cel'] ?? ''));
+        if ($phone === '') {
+            $phone = $academicPhone;
+        }
+
+        $isOperator = (int) $data['rol_id'] !== 1;
+        $hasModules = !empty($modules);
+        $hasActiveLabs = $academicId !== null && $this->countActiveLabsByAcademic($academicId) > 0;
+        $state = $isOperator && !$hasModules && !$hasActiveLabs ? 0 : 1;
+
         $this->pdo->beginTransaction();
 
         try {
             $sql = "
-                INSERT INTO usuario (usu_nom, usu_correo, usu_pass, modulos, estado)
-                VALUES (?, ?, ?, ?, 1)
+                INSERT INTO usuario (usu_nom, usu_correo, usu_cel, usu_pass, modulos, estado)
+                VALUES (?, ?, ?, ?, ?, ?)
             ";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 $data['usu_nom'],
                 $data['usu_correo'],
+                $phone !== '' ? $phone : null,
                 password_hash($password, PASSWORD_DEFAULT),
                 json_encode($modules, JSON_UNESCAPED_UNICODE),
+                $state,
             ]);
             $userId = (int) $this->pdo->lastInsertId();
 
             $this->assignRole($userId, (int) $data['rol_id']);
 
             if ($academicId !== null) {
-                $stmt = $this->pdo->prepare("UPDATE academico SET usu_id = ? WHERE id_acad = ?");
-                $stmt->execute([$userId, $academicId]);
+                if ($phone !== '') {
+                    $stmt = $this->pdo->prepare("UPDATE academico SET usu_id = ?, cel_acad = ? WHERE id_acad = ?");
+                    $stmt->execute([$userId, $phone, $academicId]);
+                } else {
+                    $stmt = $this->pdo->prepare("UPDATE academico SET usu_id = ? WHERE id_acad = ?");
+                    $stmt->execute([$userId, $academicId]);
+                }
             }
 
             $this->pdo->commit();
@@ -401,11 +432,19 @@ class User
 
     /**
      * Actualiza los datos del usuario, su rol, módulos y académico vinculado.
-     * La contraseña solo se actualiza si se envía una nueva.
+     * La contraseña solo se cambia desde el flujo de restauración.
      * @throws \Exception si la validación falla
      */
     public function update(int $id, array $data): bool
     {
+        if ($id === self::ROOT_USER_ID) {
+            $data['rol_id'] = 1;
+            $data['modulos'] = [];
+            if (array_key_exists('estado', $data)) {
+                $data['estado'] = 1;
+            }
+        }
+
         $existing = $this->findById($id);
         if (!$existing) {
             throw new \Exception("El usuario no existe");
@@ -420,27 +459,59 @@ class User
             throw new \Exception("El académico seleccionado no está disponible");
         }
 
+        $academicPhone = $academicId !== null ? $this->getAcademicPhone($academicId) : '';
+        $phone = array_key_exists('usu_cel', $data) && $data['usu_cel'] !== null
+            ? trim((string) $data['usu_cel'])
+            : trim((string) ($existing['usu_cel'] ?? ''));
+
+        // Si el usuario no tiene teléfono, se hereda el del académico vinculado.
+        if ($phone === '') {
+            $phone = $academicPhone;
+        }
+
+        $isOperator = (int) $data['rol_id'] !== 1;
+        $hasModules = !empty($modules);
+        $hasActiveLabs = $academicId !== null && $this->countActiveLabsByAcademic($academicId) > 0;
+        $state = (int) ($existing['estado'] ?? 1);
+
+        if ($isOperator) {
+            if (!$hasModules && !$hasActiveLabs) {
+                $state = 0;
+            } elseif ($state === 0) {
+                $oldAcademicId = !empty($existing['id_acad']) ? (int) $existing['id_acad'] : null;
+                $oldModules = is_array($existing['modulos'] ?? null)
+                    ? $this->normalizeModules($existing['modulos'])
+                    : $this->decodeModules($existing['modulos'] ?? null);
+                $oldHasActiveLabs = $oldAcademicId !== null
+                    && $this->countActiveLabsByAcademic($oldAcademicId) > 0;
+
+                if (empty($oldModules) && !$oldHasActiveLabs) {
+                    $state = 1;
+                }
+            }
+        }
+
+        if ($id === self::ROOT_USER_ID) {
+            $state = 1;
+        }
+
         $this->pdo->beginTransaction();
 
         try {
             $sql = "
                 UPDATE usuario
-                SET usu_nom = ?, usu_correo = ?, modulos = ?, solicitud_reset = 0
+                SET usu_nom = ?, usu_correo = ?, usu_cel = ?, modulos = ?, estado = ?
                 WHERE usu_id = ?
             ";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 $data['usu_nom'],
                 $data['usu_correo'],
+                $phone !== '' ? $phone : null,
                 json_encode($modules, JSON_UNESCAPED_UNICODE),
+                $state,
                 $id,
             ]);
-
-            $password = (string) ($data['password'] ?? '');
-            if ($password !== '') {
-                $stmt = $this->pdo->prepare("UPDATE usuario SET usu_pass = ? WHERE usu_id = ?");
-                $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $id]);
-            }
 
             $this->assignRole($id, (int) $data['rol_id']);
 
@@ -448,8 +519,13 @@ class User
                 ->execute([$id]);
 
             if ($academicId !== null) {
-                $stmt = $this->pdo->prepare("UPDATE academico SET usu_id = ? WHERE id_acad = ?");
-                $stmt->execute([$id, $academicId]);
+                if ($phone !== '') {
+                    $stmt = $this->pdo->prepare("UPDATE academico SET usu_id = ?, cel_acad = ? WHERE id_acad = ?");
+                    $stmt->execute([$id, $phone, $academicId]);
+                } else {
+                    $stmt = $this->pdo->prepare("UPDATE academico SET usu_id = ? WHERE id_acad = ?");
+                    $stmt->execute([$id, $academicId]);
+                }
             }
 
             $this->pdo->commit();
@@ -461,11 +537,57 @@ class User
     }
 
     /**
+     * Sincroniza el estado de la cuenta vinculada a un académico cuando cambia
+     * su responsabilidad sobre laboratorios.
+     */
+    public function syncOperatorStatusForAcademic(int $academicId): void
+    {
+        if ($academicId <= 0) {
+            return;
+        }
+
+        $stmt = $this->pdo->prepare("
+            SELECT u.usu_id, u.estado, u.modulos,
+                   (SELECT ur.rol_id
+                    FROM usuario_rol ur
+                    WHERE ur.usu_id = u.usu_id
+                    ORDER BY ur.rol_id ASC
+                    LIMIT 1) AS rol_id
+            FROM academico a
+            INNER JOIN usuario u ON u.usu_id = a.usu_id
+            WHERE a.id_acad = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$academicId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || (int) $user['usu_id'] === self::ROOT_USER_ID || (int) ($user['rol_id'] ?? 0) === 1) {
+            return;
+        }
+
+        $hasActiveLabs = $this->countActiveLabsByAcademic($academicId) > 0;
+        $hasModules = !empty($this->decodeModules($user['modulos'] ?? null));
+        $state = (int) ($user['estado'] ?? 1);
+
+        if ($hasActiveLabs && $state !== 1) {
+            $this->pdo->prepare("UPDATE usuario SET estado = 1 WHERE usu_id = ?")
+                ->execute([(int) $user['usu_id']]);
+        } elseif (!$hasActiveLabs && !$hasModules && $state !== 0) {
+            $this->pdo->prepare("UPDATE usuario SET estado = 0 WHERE usu_id = ?")
+                ->execute([(int) $user['usu_id']]);
+        }
+    }
+
+    /**
      * Activa o desactiva una cuenta. Evita que el administrador se desactive a sí mismo.
      * @throws \Exception si se intenta desactivar la cuenta propia
      */
     public function toggleStatus(int $id): bool
     {
+        if ($id === self::ROOT_USER_ID) {
+            throw new \Exception("La cuenta del Super Administrador no puede ser desactivada");
+        }
+
         $currentUserId = (int) ($_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 0);
 
         if ($id === $currentUserId) {
@@ -494,6 +616,41 @@ class User
         ]);
 
         return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Devuelve el teléfono registrado en la ficha académica.
+     */
+    private function getAcademicPhone(int $academicId): string
+    {
+        $stmt = $this->pdo->prepare("SELECT cel_acad FROM academico WHERE id_acad = ? LIMIT 1");
+        $stmt->execute([$academicId]);
+        $phone = $stmt->fetchColumn();
+
+        return $phone !== false ? trim((string) $phone) : '';
+    }
+
+    /**
+     * Sincroniza el teléfono entre la cuenta y su ficha académica vinculada.
+     */
+    private function syncAcademicPhone(int $userId, int $academicId, string $academicPhone): void
+    {
+        $stmt = $this->pdo->prepare("SELECT usu_cel FROM usuario WHERE usu_id = ? LIMIT 1");
+        $stmt->execute([$userId]);
+        $userPhone = trim((string) ($stmt->fetchColumn() ?: ''));
+
+        $phone = $userPhone !== '' ? $userPhone : trim($academicPhone);
+        if ($phone === '') {
+            return;
+        }
+
+        if ($userPhone === '') {
+            $this->pdo->prepare("UPDATE usuario SET usu_cel = ? WHERE usu_id = ?")
+                ->execute([$phone, $userId]);
+        }
+
+        $this->pdo->prepare("UPDATE academico SET cel_acad = ? WHERE id_acad = ?")
+            ->execute([$phone, $academicId]);
     }
 
     /**
@@ -528,6 +685,17 @@ class User
         $password = (string) ($data['password'] ?? '');
         if ($password !== '' && strlen($password) < 6) {
             throw new \Exception("La contraseña debe tener al menos 6 caracteres");
+        }
+
+        $phone = trim((string) ($data['usu_cel'] ?? ''));
+        if ($phone !== '') {
+            if (strlen($phone) > 20) {
+                throw new \Exception("El teléfono no puede superar los 20 caracteres");
+            }
+
+            if (!preg_match('/^[0-9\+\-\s]*$/', $phone)) {
+                throw new \Exception("El teléfono contiene caracteres no válidos");
+            }
         }
     }
 
@@ -595,6 +763,21 @@ class User
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM usuario_rol WHERE usu_id = ?");
         $stmt->execute([$userId]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Cuenta los laboratorios activos asignados a un académico.
+     */
+    private function countActiveLabsByAcademic(int $academicId): int
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*)
+            FROM laboratorio
+            WHERE resp_acad_id = ? AND activo = 1
+        ");
+        $stmt->execute([$academicId]);
 
         return (int) $stmt->fetchColumn();
     }
