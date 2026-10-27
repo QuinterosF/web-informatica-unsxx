@@ -15,6 +15,21 @@ class HomeController extends Controller
     public function index(): void
     {
         $portal = new PublicPortal();
+        $announcements = $portal->getAnnouncements(3);
+
+        // Obtenemos el comunicado fijado (fijado = 1) si existe
+        $pinnedAnnouncement = method_exists($portal, 'getPinnedAnnouncement')
+            ? $portal->getPinnedAnnouncement()
+            : null;
+
+        if ($pinnedAnnouncement === null) {
+            foreach ($announcements as $ann) {
+                if ((int) ($ann['fijado'] ?? 0) === 1) {
+                    $pinnedAnnouncement = $ann;
+                    break;
+                }
+            }
+        }
 
         $this->renderPublicView('public/home', $portal, [
             'title' => 'Ingeniería Informática - UNSXX',
@@ -23,7 +38,8 @@ class HomeController extends Controller
             'academics' => $portal->getAcademicsGrouped(),
             'mentions' => $portal->getMentions(),
             'admissions' => $portal->getAdmissions(),
-            'announcements' => $portal->getAnnouncements(3),
+            'announcements' => $announcements,
+            'pinnedAnnouncement' => $pinnedAnnouncement,
             'extensions' => $portal->getExtensionsWithGallery(3),
             'extensionCategories' => $portal->getExtensionCategories(),
             'logros' => $portal->getLogros(4),
@@ -47,11 +63,19 @@ class HomeController extends Controller
     public function admision(): void
     {
         $portal = new PublicPortal();
+        $todosLosDocumentos = $portal->getOfficialDocuments();
+
+        // Filtramos los PDF con categoría 'reglamento_admision'
+        $reglamentosAdmision = array_values(array_filter(
+            $todosLosDocumentos,
+            static fn(array $doc): bool => ($doc['categoria'] ?? '') === 'reglamento_admision'
+        ));
 
         $this->renderPublicView('public/carrera/admision', $portal, [
             'title' => 'Admisión - Ingeniería Informática UNSXX',
-            'pageTitle' => 'Admisión',
+            'pageTitle' => 'Admisión y Postulantes',
             'admissions' => $portal->getAdmissions(),
+            'documents' => $reglamentosAdmision,
         ]);
     }
 
@@ -89,12 +113,7 @@ class HomeController extends Controller
         $layout = $portal->getCommonLayoutData();
 
         $celulares = $layout['phones'] ?? [];
-
-        $enlacesServicios = $layout['enlacesServicios'] ?? [];
-        $enlacesInvestigacion = $layout['enlacesInvestigacion'] ?? [];
-        $enlacesFooterInstitucional = $layout['enlacesFooterInstitucional'] ?? [];
         $enlacesRedesSociales = $layout['enlacesRedesSociales'] ?? [];
-        $telefonoSoporte = $layout['telefonoSoporte'] ?? null;
 
         $pageTitle = 'Contacto y Ubicación';
 
@@ -104,9 +123,9 @@ class HomeController extends Controller
             'enlacesRedesSociales' => $enlacesRedesSociales,
             'pageTitle' => $pageTitle,
         ]);
-        $content = ob_get_clean();
+        $content = (string) ob_get_clean();
 
-        require __DIR__ . '/../Views/layouts/public.php';
+        $this->renderPublicLayout($layout, $content, $pageTitle);
     }
 
     public function menciones(): void
@@ -274,7 +293,23 @@ class HomeController extends Controller
 
         ob_start();
         $this->view($view, $viewData);
-        $content = ob_get_clean();
+        $content = (string) ob_get_clean();
+
+        $this->renderPublicLayout($layout, $content, (string) ($viewData['pageTitle'] ?? 'Inicio'));
+    }
+
+    /**
+     * Renderiza el layout público con las variables que consumen
+     * navbar.php y footer.php dentro del mismo ámbito.
+     */
+    private function renderPublicLayout(array $layout, string $content, string $pageTitle): void
+    {
+        $pageTitle = $pageTitle !== '' ? $pageTitle : 'Inicio';
+        $enlacesServicios = $layout['enlacesServicios'] ?? [];
+        $enlacesInvestigacion = $layout['enlacesInvestigacion'] ?? [];
+        $enlacesFooterInstitucional = $layout['enlacesFooterInstitucional'] ?? [];
+        $enlacesRedesSociales = $layout['enlacesRedesSociales'] ?? [];
+        $telefonoSoporte = $layout['telefonoSoporte'] ?? null;
 
         require __DIR__ . '/../Views/layouts/public.php';
     }

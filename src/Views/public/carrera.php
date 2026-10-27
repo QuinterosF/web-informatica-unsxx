@@ -143,7 +143,6 @@ $electivasCatalogo = [
 ];
 
 $title = 'La Carrera y Plan de Estudios — Ingeniería Informática UNSXX';
-ob_start();
 ?>
 
 <!-- =========================================================================
@@ -718,8 +717,3 @@ ob_start();
         }
     }
 </script>
-
-<?php
-$content = ob_get_clean();
-require __DIR__ . '/../layouts/public.php';
-?>

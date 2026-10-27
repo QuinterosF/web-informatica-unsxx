@@ -1,14 +1,48 @@
 <?php
 /**
- * Variables opcionales para enlaces dinámicos del pie de página:
+ * Variables opcionales para enlaces y teléfonos dinámicos del pie de página:
  * @var array $enlacesFooterInstitucional (ubicacion = 'footer_enlaces')
  * @var array $enlacesRedesSociales       (ubicacion = 'footer_redes')
+ * @var array $phones|$celulares          Registros activos de la tabla `celular`
  */
-$enlacesFooterInstitucional = $enlacesFooterInstitucional ?? [];
-$enlacesRedesSociales = $enlacesRedesSociales ?? [];
+use App\Config\Database;
 
-$numSoporte = $telefonoSoporte['num_cel'] ?? '67264027';
-$numSoporteLimpio = '591' . preg_replace('/[^0-9]/', '', $numSoporte);
+$enlacesFooterInstitucional = $enlacesFooterInstitucional ?? [];
+$enlacesRedesSociales       = $enlacesRedesSociales ?? [];
+
+// Recuperar teléfonos desde las variables inyectadas por el controlador o directamente desde la BD como respaldo
+$listaTelefonosRaw = $phones ?? ($celulares ?? ($layout['phones'] ?? []));
+if (empty($listaTelefonosRaw)) {
+    try {
+        $pdoFooter = Database::getInstance();
+        $stmtTelFooter = $pdoFooter->query("
+            SELECT id_cel, nom_cel, num_cel, icono, es_soporte
+            FROM celular
+            WHERE estado = 1
+            ORDER BY es_soporte ASC, id_cel ASC
+        ");
+        $listaTelefonosRaw = $stmtTelFooter ? $stmtTelFooter->fetchAll(PDO::FETCH_ASSOC) : [];
+    } catch (Throwable $e) {
+        $listaTelefonosRaw = [];
+    }
+}
+
+// Separar los números de contacto institucional del número de Soporte Técnico (es_soporte = 1)
+$telefonosFooter = [];
+$telefonoSoporteDetectado = $telefonoSoporte ?? ($supportPhone ?? null);
+
+foreach ($listaTelefonosRaw as $telItem) {
+    if ((int) ($telItem['es_soporte'] ?? 0) === 1) {
+        if ($telefonoSoporteDetectado === null) {
+            $telefonoSoporteDetectado = $telItem;
+        }
+    } else {
+        $telefonosFooter[] = $telItem;
+    }
+}
+
+$numSoporte = $telefonoSoporteDetectado['num_cel'] ?? '67264027';
+$numSoporteLimpio = '591' . preg_replace('/[^0-9]/', '', (string) $numSoporte);
 $urlActual = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://" . ($_SERVER['HTTP_HOST'] ?? 'informatica.unsxx.bo') . ($_SERVER['REQUEST_URI'] ?? '/');
 $msgReporte = rawurlencode("Hola Soporte Técnico de Ing. Informática UNSXX, deseo reportar un inconveniente técnico en el portal web público (URL: {$urlActual}). Detalle: ");
 ?>
@@ -16,7 +50,7 @@ $msgReporte = rawurlencode("Hola Soporte Técnico de Ing. Informática UNSXX, de
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
 
-            <!-- Columna 1: Identidad -->
+            <!-- Columna 1: Identidad + Logo CEUB -->
             <div>
                 <div class="flex items-center gap-3 mb-5">
                     <div class="flex items-center gap-2">
@@ -35,26 +69,34 @@ $msgReporte = rawurlencode("Hola Soporte Técnico de Ing. Informática UNSXX, de
                     Formando profesionales orgánicos con capacidad científica, tecnológica e innovación para el
                     desarrollo de la región y el país.
                 </p>
-                <div
-                    class="inline-block px-3 py-1.5 border border-institucional-gold/60 rounded-full text-xs font-semibold text-institucional-gold">
-                    <i class="fas fa-check-circle mr-1"></i> Carrera Acreditada al CEUB
+
+                <!-- Distintivo con el Logo Oficial del CEUB -->
+                <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-white/5 border border-institucional-gold/60 rounded-full text-xs font-semibold text-institucional-gold shadow-sm">
+                    <img src="/assets/img/logo-ceub.png" alt="Logo CEUB" class="h-12 w-auto object-contain drop-shadow-[0_0_4px_rgba(255,255,255,0.6)]">
+                    <span>Carrera Acreditada al CEUB</span>
                 </div>
             </div>
 
             <!-- Columna 2: Enlaces Rápidos + Enlaces Institucionales Dinámicos ('footer_enlaces') -->
             <div>
-                <h4
-                    class="text-white font-bold mb-4 uppercase tracking-wider text-sm border-b border-institucional-gold/30 pb-2">
-                    Enlaces Rápidos</h4>
+                <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm border-b border-institucional-gold/30 pb-2">
+                    Enlaces Rápidos
+                </h4>
                 <ul class="space-y-2.5 text-sm mt-4">
-                    <li><a href="/admision" class="hover:text-institucional-gold transition-colors flex items-center"><i
-                                class="fas fa-angle-right mr-2 text-institucional-gold"></i> Admisión</a></li>
-                    <li><a href="/academico/plan-estudios"
-                            class="hover:text-institucional-gold transition-colors flex items-center"><i
-                                class="fas fa-angle-right mr-2 text-institucional-gold"></i> Plan de Estudios</a></li>
-                    <li><a href="/comunicados"
-                            class="hover:text-institucional-gold transition-colors flex items-center"><i
-                                class="fas fa-angle-right mr-2 text-institucional-gold"></i> Comunicados y Avisos</a>
+                    <li>
+                        <a href="/admision" class="hover:text-institucional-gold transition-colors flex items-center">
+                            <i class="fas fa-angle-right mr-2 text-institucional-gold"></i> Admisión
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/academico/plan-estudios" class="hover:text-institucional-gold transition-colors flex items-center">
+                            <i class="fas fa-angle-right mr-2 text-institucional-gold"></i> Plan de Estudios
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/comunicados" class="hover:text-institucional-gold transition-colors flex items-center">
+                            <i class="fas fa-angle-right mr-2 text-institucional-gold"></i> Comunicados y Avisos
+                        </a>
                     </li>
 
                     <?php foreach ($enlacesFooterInstitucional as $enl): ?>
@@ -69,28 +111,50 @@ $msgReporte = rawurlencode("Hola Soporte Técnico de Ing. Informática UNSXX, de
                 </ul>
             </div>
 
-            <!-- Columna 3: Contacto y Atención -->
+            <!-- Columna 3: Contacto Dinámico y Atención -->
             <div>
-                <h4
-                    class="text-white font-bold mb-4 uppercase tracking-wider text-sm border-b border-institucional-gold/30 pb-2">
-                    Contacto</h4>
+                <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm border-b border-institucional-gold/30 pb-2">
+                    Contacto
+                </h4>
                 <ul class="space-y-3 text-sm text-slate-300 mt-4">
                     <li class="flex items-start gap-3">
-                        <i class="fas fa-map-marker-alt mt-1 text-institucional-gold"></i>
-                        <span>Campus María Barzola (Carretera a Catavi).<br>Edificio Bloque A, 1er Piso. Llallagua,
-                            Potosí.</span>
+                        <i class="fas fa-map-marker-alt mt-1 text-institucional-gold w-4 text-center flex-shrink-0"></i>
+                        <span>Campus María Barzola (Carretera a Catavi).<br>Edificio Bloque A, 1er Piso. Llallagua, Potosí.</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <i class="fas fa-envelope text-institucional-gold"></i>
-                        <a href="mailto:informatica@unsxx.bo"
-                            class="hover:text-white transition-colors">informatica@unsxx.bo</a>
+                        <i class="fas fa-envelope text-institucional-gold w-4 text-center flex-shrink-0"></i>
+                        <a href="mailto:informatica@unsxx.bo" class="hover:text-white transition-colors">informatica@unsxx.bo</a>
                     </li>
-                    <li class="flex items-center gap-3">
-                        <i class="fas fa-phone-alt text-institucional-gold"></i>
-                        <span>Dirección: 60492494 - 72457622</span>
-                    </li>
+
+                    <!-- Números de Contacto Dinámicos desde la tabla `celular` -->
+                    <?php if (!empty($telefonosFooter)): ?>
+                        <li class="pt-1 space-y-2">
+                            <?php foreach ($telefonosFooter as $tel): ?>
+                                <?php
+                                    $nomCel = trim((string) ($tel['nom_cel'] ?? 'Contacto'));
+                                    $numCel = trim((string) ($tel['num_cel'] ?? ''));
+                                    $icoCel = trim((string) ($tel['icono'] ?? 'fas fa-phone-alt'));
+                                    $numLimpio = preg_replace('/[^0-9]/', '', $numCel);
+                                    $esWa = stripos($icoCel, 'whatsapp') !== false;
+                                    $hrefTel = $esWa
+                                        ? 'https://wa.me/' . (strlen($numLimpio) === 8 ? '591' . $numLimpio : $numLimpio)
+                                        : 'tel:+591' . $numLimpio;
+                                ?>
+                                <div class="flex items-center gap-3">
+                                    <i class="<?= htmlspecialchars($icoCel) ?> text-institucional-gold w-4 text-center flex-shrink-0"></i>
+                                    <a href="<?= htmlspecialchars($hrefTel) ?>"
+                                       <?= $esWa ? 'target="_blank" rel="noopener noreferrer"' : '' ?>
+                                       class="hover:text-institucional-gold transition-colors">
+                                        <span class="text-slate-300"><?= htmlspecialchars($nomCel) ?>:</span>
+                                        <strong class="text-white font-semibold ml-1"><?= htmlspecialchars($numCel) ?></strong>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </li>
+                    <?php endif; ?>
+
                     <li class="flex items-start gap-3 mt-4 pt-4 border-t border-institucional-gold/30">
-                        <i class="fas fa-clock mt-1 text-institucional-gold"></i>
+                        <i class="fas fa-clock mt-1 text-institucional-gold w-4 text-center flex-shrink-0"></i>
                         <div>
                             <span class="block text-white font-medium mb-1">Horarios de Atención:</span>
                             Lunes a Viernes<br>
@@ -102,12 +166,10 @@ $msgReporte = rawurlencode("Hola Soporte Técnico de Ing. Informática UNSXX, de
         </div>
 
         <!-- Copyright + Reporte de Incidencia + Redes Sociales ('footer_redes') -->
-        <div
-            class="mt-12 pt-6 border-t border-institucional-gold/30 flex flex-col lg:flex-row justify-between items-center gap-4 text-center lg:text-left">
+        <div class="mt-12 pt-6 border-t border-institucional-gold/30 flex flex-col lg:flex-row justify-between items-center gap-4 text-center lg:text-left">
             <p class="text-sm text-slate-300">
                 &copy; <?= date('Y') ?> Carrera de Ingeniería Informática UNSXX. Todos los derechos reservados.
             </p>
-
 
             <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
                 <a href="https://wa.me/<?= $numSoporteLimpio ?>?text=<?= $msgReporte ?>" target="_blank"

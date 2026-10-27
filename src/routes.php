@@ -220,6 +220,8 @@ $router->post('/admissions/{id}', [AdmissionController::class, 'update'])
     ->middleware($moduleGuard('admissions'));
 $router->post('/admissions/{id}/delete', [AdmissionController::class, 'destroy'])
     ->middleware($moduleGuard('admissions'));
+$router->get('/admision', [HomeController::class, 'admision']);
+$router->get('/academico/admision', [HomeController::class, 'admision']);
 
 /* ==================== CRUD DOCUMENTOS OFICIALES ==================== */
 $router->get('/documents', [OfficialDocumentController::class, 'index'])

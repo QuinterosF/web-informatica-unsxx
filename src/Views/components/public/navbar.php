@@ -50,7 +50,7 @@ $enlacesServicios     = $enlacesServicios ?? [];
 
                     <div class="absolute left-0 mt-0 w-60 bg-white text-slate-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border-t-4 border-institucional-gold overflow-hidden">
                         <a href="/academico/plan-estudios" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy border-b border-slate-100">Plan de Estudios</a>
-                        <a href="/academico/admision" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy">Admisión</a>
+                        <a href="/academico/admision" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy">Admisión y Becas</a>
                         <a href="/academico/titulacion" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy">Titulación</a>
                         <a href="/laboratorios" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy border-b border-slate-100">Laboratorios</a>
                         <a href="/horarios" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy border-b border-slate-100">Horarios de Clase</a>
