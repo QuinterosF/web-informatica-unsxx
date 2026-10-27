@@ -41,7 +41,7 @@ class Academic
             SELECT a.id_acad, a.nom_acad 
             FROM academico a
             JOIN categoria_academico c ON a.cat_acad = c.cat_id
-            WHERE c.cat_nombre IN ('Coordinador de Mención', 'Coordinador del IIDAI')
+            WHERE c.cat_nombre IN ('Coord. Seguridad Informática', 'Coord. Computación Móvil', 'Coord. IIDAI')
             ORDER BY a.nom_acad ASC
         ";
         $stmt = $this->pdo->query($sql);

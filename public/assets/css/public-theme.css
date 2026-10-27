@@ -1,0 +1,191 @@
+/* ==========================================================================
+   PORTAL PÚBLICO INGENIERÍA INFORMÁTICA UNSXX - LIGHT AURORA TECH THEME
+   Inspirado en tokens de precisión (Figtree + Inter + IBM Plex Mono)
+   ========================================================================== */
+
+:root {
+    /* Paleta Institucional Oficial */
+    --color-navy: #1e3a8a;
+    --color-navy-deep: #172554;
+    --color-signal-blue: #2563eb;
+    --color-gold: #eab308;
+    --color-gold-hover: #ca8a04;
+
+    /* Superficies por Niveles (Light Mode) */
+    --surface-canvas: #f1f5f9;          /* Nivel 0: Lienzo base (no blanco puro) */
+    --surface-section: #f8fafc;         /* Nivel 1: Secciones */
+    --surface-card: rgba(255, 255, 255, 0.88); /* Nivel 2: Tarjetas traslúcidas */
+    --surface-spotlight: #eff6ff;       /* Nivel 3: Tarjetas destacadas con tinte azul */
+
+    /* Bordes Técnicos (Hairlines) */
+    --border-subtle: #e2e8f0;
+    --border-sapphire: rgba(30, 58, 138, 0.16);
+    --border-gold: rgba(234, 179, 8, 0.45);
+
+    /* Sombras Multicapa (Inspiradas en DESIGN.md adaptadas a Navy) */
+    --shadow-card: 0px 4px 24px -4px rgba(15, 23, 42, 0.07), 0px 0px 0px 1px rgba(30, 58, 138, 0.06);
+    --shadow-elevated: 0px 20px 35px -10px rgba(30, 58, 138, 0.14), 0px 4px 13px -2px rgba(15, 23, 42, 0.06);
+    --shadow-glow-gold: 0px 10px 25px -5px rgba(234, 179, 8, 0.35);
+
+    /* Tipografías */
+    --font-display: 'Figtree', sans-serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+}
+
+/* Lienzo Global con Efecto Aurora Institucional (Evita el fondo blanco plano) */
+.aurora-light-canvas {
+    background-color: var(--surface-canvas);
+    background-image: 
+        radial-gradient(65% 55% at 12% 8%, rgba(30, 58, 138, 0.14) 0%, rgba(30, 58, 138, 0) 100%),
+        radial-gradient(50% 45% at 88% 18%, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0) 100%),
+        radial-gradient(60% 50% at 50% 85%, rgba(37, 99, 235, 0.10) 0%, rgba(37, 99, 235, 0) 100%);
+    background-attachment: fixed;
+}
+
+/* Malla sutil de ingeniería sobre el lienzo claro */
+.tech-grid-light {
+    background-size: 32px 32px;
+    background-image: 
+        linear-gradient(to right, rgba(30, 58, 138, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 58, 138, 0.045) 1px, transparent 1px);
+}
+
+/* Hero Institucional con Aurora Glow Intenso */
+.aurora-hero-navy {
+    background-color: var(--color-navy);
+    background-image: 
+        radial-gradient(75% 90% at 25% -20%, rgba(59, 130, 246, 0.42) 0%, rgba(30, 58, 138, 0) 100%),
+        radial-gradient(45% 60% at 85% 110%, rgba(234, 179, 8, 0.28) 0%, rgba(234, 179, 8, 0) 100%),
+        linear-gradient(180deg, #1e3a8a 0%, #172554 100%);
+}
+
+/* Tipografía Display (Figtree como en DESIGN.md) */
+.font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+}
+
+.font-code {
+    font-family: var(--font-mono);
+}
+
+/* Tarjetas estilo Bento Tech sobre Lienzo Claro */
+.tech-card {
+    background: var(--surface-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-sapphire);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tech-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(30, 58, 138, 0.32);
+    box-shadow: var(--shadow-elevated);
+}
+
+/* Variante de Tarjeta Destacada (Cobalt/Spotlight adaptada a claro) */
+.tech-card-spotlight {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(239, 246, 255, 0.92) 100%);
+    border: 1px solid rgba(37, 99, 235, 0.22);
+    border-radius: 12px;
+    box-shadow: var(--shadow-elevated);
+}
+
+/* Ventana de Código / Consola Institucional */
+.code-window-panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.92) 100%);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(30, 58, 138, 0.18);
+    border-radius: 12px;
+    box-shadow: var(--shadow-elevated);
+}
+
+/* ==========================================================================
+SOPORTE GLOBAL PARA TEXTO ENRIQUECIDO DE QUILL.JS (.quill-content)
+========================================================================== */
+.quill-content p {
+    margin-bottom: 0.65rem;
+}
+.quill-content p:last-child {
+    margin-bottom: 0;
+}
+.quill-content strong, 
+.quill-content b {
+    font-weight: 700;
+    color: #0f172a;
+}
+.quill-content em, 
+.quill-content i {
+    font-style: italic;
+}
+
+/* Restaurar viñetas y numeración que Tailwind Preflight oculta, incluyendo data-list de Quill */
+.quill-content ul,
+#modal-docente-descripcion ul {
+    list-style-type: disc !important;
+    margin: 0.5rem 0 0.85rem 0 !important;
+    padding-left: 1.5rem !important;
+}
+.quill-content ol,
+#modal-docente-descripcion ol {
+    list-style-type: decimal !important;
+    margin: 0.5rem 0 0.85rem 0 !important;
+    padding-left: 1.5rem !important;
+}
+.quill-content li,
+#modal-docente-descripcion li {
+    display: list-item !important;
+    margin-bottom: 0.35rem !important;
+    line-height: 1.55;
+}
+/* Quill v2 guarda listas con viñetas como <ol><li data-list="bullet"> */
+.quill-content li[data-list="bullet"],
+#modal-docente-descripcion li[data-list="bullet"] {
+    list-style-type: disc !important;
+}
+.quill-content li[data-list="ordered"],
+#modal-docente-descripcion li[data-list="ordered"] {
+    list-style-type: decimal !important;
+}
+.quill-content .ql-ui,
+#modal-docente-descripcion .ql-ui {
+    display: none !important;
+}
+
+/* RESUMEN DE 3 LÍNEAS EN TARJETAS DOCENTES: Altura fija estricta sin desbordamiento */
+.texto-resumen-docente {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    max-height: 4.5rem; /* Garantiza máximo 3 líneas incluso si hay listas <ol>/<ul> adentro */
+    line-height: 1.5rem;
+}
+.texto-resumen-docente p,
+.texto-resumen-docente ul,
+.texto-resumen-docente ol,
+.texto-resumen-docente li {
+    display: inline !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+.texto-resumen-docente p::after,
+.texto-resumen-docente li::after {
+    content: " · ";
+    color: #94a3b8;
+}
+.texto-resumen-docente li:last-child::after,
+.texto-resumen-docente p:last-child::after {
+    content: "";
+}
+
+/* Cuando se usa con line-clamp-3 dentro de las tarjetas docentes */
+.texto-resumen-docente.line-clamp-3 p {
+    display: inline;
+    margin: 0;
+}

@@ -71,7 +71,7 @@ class OfficialDocumentController extends Controller
             return;
         }
 
-        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_admision', 'reglamento_interno', 'reglamento_macro', 'otro'];
         $categoria = in_array($_POST['categoria'] ?? '', $allowedCategories, true) ? $_POST['categoria'] : 'otro';
 
         $data = [
@@ -162,7 +162,7 @@ class OfficialDocumentController extends Controller
             }
         }
 
-        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_admision', 'reglamento_interno', 'reglamento_macro', 'otro'];
         $categoria = in_array($_POST['categoria'] ?? '', $allowedCategories, true) ? $_POST['categoria'] : 'otro';
 
         $data = [

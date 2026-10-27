@@ -77,7 +77,7 @@ class Dashboard
         'logros' => [
             'label' => 'Logros de la Carrera',
             'desc' => 'Premios y reconocimientos históricos.',
-            'url' => '/logros',
+            'url' => '/admin/logros',
             'color' => 'amber',
         ],
     ];
@@ -148,7 +148,7 @@ class Dashboard
                 'label' => 'Logros',
                 'value' => $logros,
                 'sub' => 'reconocimientos publicados',
-                'url' => '/logros',
+                'url' => '/admin/logros',
                 'color' => 'amber',
             ],
             [
@@ -387,7 +387,7 @@ class Dashboard
                    lg.nom_log,
                    COALESCE(u.usu_nom, 'Sistema'),
                    lg.actualizado_en,
-                   CONCAT('/logros/', lg.id_log, '/edit')
+                   CONCAT('/admin/logros/', lg.id_log, '/edit')
             FROM logro lg
             LEFT JOIN usuario u ON u.usu_id = COALESCE(lg.actualizado_por, lg.registrado_por)
             WHERE lg.actualizado_en IS NOT NULL
@@ -462,7 +462,7 @@ class Dashboard
                        WHEN 'Documentos' THEN '/documents'
                        WHEN 'Comunicados' THEN '/announcements'
                        WHEN 'Extensión' THEN '/extensions'
-                       WHEN 'Logros' THEN '/logros'
+                       WHEN 'Logros' THEN '/admin/logros'
                        WHEN 'Académicos' THEN '/academics'
                        WHEN 'Laboratorios' THEN '/labs'
                        WHEN 'Portadas' THEN '/portadas'

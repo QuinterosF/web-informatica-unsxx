@@ -28,6 +28,7 @@ ob_start();
                     <th scope="col" class="px-4 py-3">Fecha</th>
                     <th scope="col" class="px-4 py-3 text-center">Estado</th>
                     <th scope="col" class="px-4 py-3 text-center">Adjuntos</th>
+                    <th scope="col" class="px-6 py-3 text-center">Fijar</th>
                     <th scope="col" class="px-4 py-3">Autor</th>
                     <th data-sortable="false" scope="col" class="px-4 py-3 rounded-tr-lg text-center">Acciones</th>
                 </tr>
@@ -39,8 +40,8 @@ ob_start();
                             <td class="px-4 py-3">
                                 <div class="font-medium text-gray-900 mb-1"><?= htmlspecialchars($item['nom_com']) ?></div>
                                 <div class="text-xs text-gray-500 max-w-xs line-clamp-1"
-                                    title="<?= htmlspecialchars($item['desc_com']) ?>">
-                                    <?= htmlspecialchars($item['desc_com']) ?>
+                                    title="<?= htmlspecialchars(mb_strimwidth(strip_tags($item['desc_com']), 0, 80, '...')) ?>">
+                                    <?= htmlspecialchars(mb_strimwidth(strip_tags($item['desc_com']), 0, 80, '...')) ?>
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-unsxx-blue-800 font-medium whitespace-nowrap">
@@ -91,6 +92,23 @@ ob_start();
                                         </span>
                                     <?php endif; ?>
                                 </div>
+                            </td>
+
+                            <td class="px-6 py-4 text-center">
+                                <form action="/announcements/<?= (int) $item['id_com'] ?>/pin" method="POST"
+                                    class="inline-block m-0 p-0">
+                                    <button type="submit"
+                                        title="<?= !empty($item['fijado']) ? 'Quitar fijado' : 'Fijar comunicado' ?>"
+                                        class="p-2 rounded-xl transition-all border cursor-pointer <?= !empty($item['fijado']) ? 'bg-unsxx-yellow-400 border-unsxx-yellow-500 shadow-sm' : 'bg-slate-50 border-slate-200 hover:bg-white hover:border-slate-300' ?>">
+
+                                        <!-- Ícono de Chincheta (Pin) -->
+                                        <span
+                                            class="text-base leading-none block transition-all <?= !empty($item['fijado']) ? '' : 'opacity-40 grayscale hover:opacity-100 hover:grayscale-0' ?>">
+                                            📌
+                                        </span>
+
+                                    </button>
+                                </form>
                             </td>
 
                             <td class="px-4 py-3 text-gray-500 text-xs">

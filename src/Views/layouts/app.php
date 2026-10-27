@@ -61,6 +61,88 @@ try {
     </script>
 </head>
 
+<!-- Editor de Texto Enriquecido Global (Quill.js) para todos los Textarea del Dashboard -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+<style>
+    .ql-toolbar.ql-snow {
+        border-color: #d1d5db !important;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        background-color: #f8fafc;
+        font-family: inherit;
+    }
+
+    .ql-container.ql-snow {
+        border-color: #d1d5db !important;
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+        background-color: #ffffff;
+        font-family: inherit;
+        font-size: 0.875rem;
+        min-height: 130px;
+    }
+
+    .ql-editor {
+        min-height: 130px;
+        color: #1f2937;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('form textarea').forEach((textarea) => {
+            if (textarea.dataset.noRichText !== undefined) return;
+
+            // Crear contenedor visual para el editor
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mb-1';
+            const editorDiv = document.createElement('div');
+            editorDiv.innerHTML = textarea.value;
+            wrapper.appendChild(editorDiv);
+
+            // Ocultar textarea original pero mantenerlo para el envío POST
+            textarea.classList.add('hidden');
+            textarea.removeAttribute('required');
+            textarea.parentNode.insertBefore(wrapper, textarea);
+
+            const quill = new Quill(editorDiv, {
+                theme: 'snow',
+                placeholder: textarea.getAttribute('placeholder') || 'Escribe y da formato al contenido aquí...',
+                modules: {
+                    toolbar: [
+                        [{ header: [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        [{
+                            color: [
+                                false,      // Color por defecto (se adapta automáticamente al Modo Claro y Oscuro)
+                                '#08304c',  // Azul Marino Institucional (Portrait Ink)
+                                '#1e3a8a',  // Azul UNSXX Principal
+                                '#2563eb',  // Azul Eléctrico (Signal Blue / Tecnología)
+                                '#0284c7',  // Celeste Informática / Redes
+                                '#0d9488',  // Verde Petróleo / Laboratorios y Software
+                                '#16a34a',  // Verde Éxito / Convocatorias Aprobadas
+                                '#ca8a04',  // Oro / Ámbar UNSXX (Contraste óptimo para lectura)
+                                '#ea580c',  // Naranja / Fechas límite y Avisos
+                                '#dc2626',  // Rojo Académico / Comunicados Urgentes
+                                '#475569'   // Gris Pizarra Técnico / Notas aclaratorias
+                            ]
+                        }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Sincronizar cambios hacia el textarea oculto
+            quill.on('text-change', function () {
+                const html = quill.root.innerHTML;
+                textarea.value = (html === '<p><br></p>') ? '' : html;
+            });
+        });
+    });
+</script>
+
 <body class="min-h-screen bg-unsxx-blue-50">
     <!-- Sidebar Overlay (mobile) -->
     <aside id="sidebar-overlay" class="fixed inset-0 z-40 bg-black/50 lg:hidden hidden" aria-hidden="true"></aside>
@@ -91,7 +173,7 @@ try {
 
             <!-- 1. Principal -->
             <div>
-                <div class="flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
+                <div class=" flex items-center gap-2 px-3 mb-2 text-unsxx-yellow-400/80">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
@@ -275,7 +357,7 @@ try {
                             </a>
                         <?php endif; ?>
                         <?php if (Auth::canAccessModule('logros')): ?>
-                            <a href="/logros"
+                            <a href="/admin/logros"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-unsxx-blue-100 hover:bg-unsxx-blue-800 hover:text-white transition">
                                 <svg class="w-4 h-4 text-unsxx-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     stroke-width="2">
@@ -454,35 +536,35 @@ try {
 
     <!-- Vanilla JS for Sidebar Toggle -->
     <script>
-            (function () {
-                const menuToggle = document.getElementById('menu-toggle');
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('sidebar-overlay');
+        (function () {
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
 
-                function openSidebar() {
-                    sidebar.classList.add('open');
-                    overlay.classList.add('open');
-                    menuToggle.setAttribute('aria-expanded', 'true');
-                    document.body.style.overflow = 'hidden';
-                }
+            function openSidebar() {
+                sidebar.classList.add('open');
+                overlay.classList.add('open');
+                menuToggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
 
-                function closeSidebar() {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                    document.body.style.overflow = '';
-                }
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
 
-                menuToggle.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
-                });
+            menuToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+            });
 
-                overlay.addEventListener('click', closeSidebar);
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
-                });
-            })();
+            overlay.addEventListener('click', closeSidebar);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+            });
+        })();
     </script>
 
     <!-- SweetAlert2 Flash Notifications -->

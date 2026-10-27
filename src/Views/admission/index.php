@@ -91,13 +91,13 @@ ob_start();
                                 <?php endif; ?>
                             </td>
                             <td class="px-4 py-3 text-gray-600">
-                                <div class="max-w-[200px] line-clamp-2" title="<?= htmlspecialchars($item['req_adm']) ?>">
-                                    <?= htmlspecialchars($item['req_adm']) ?>
+                                <div class="max-w-[200px] line-clamp-2" title="<?= htmlspecialchars(mb_strimwidth(strip_tags($item['req_adm']), 0, 80, '...')) ?>">
+                                    <?= htmlspecialchars(mb_strimwidth(strip_tags($item['req_adm']), 0, 80, '...')) ?>
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-gray-900 font-medium">
-                                <div class="max-w-[200px] line-clamp-2" title="<?= htmlspecialchars($item['proc_adm']) ?>">
-                                    <?= htmlspecialchars($item['proc_adm']) ?>
+                                <div class="max-w-[200px] line-clamp-2" title="<?= htmlspecialchars(mb_strimwidth(strip_tags($item['proc_adm']), 0, 80, '...')) ?>">
+                                    <?= htmlspecialchars(mb_strimwidth(strip_tags($item['proc_adm']), 0, 80, '...')) ?>
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-gray-500 text-xs">

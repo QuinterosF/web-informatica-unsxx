@@ -7,7 +7,9 @@ $categorias = [
     'plan_estudios'         => ['label' => 'Plan de Estudios', 'class' => 'bg-blue-100 text-blue-800'],
     'horario_clases'        => ['label' => 'Horario de Clases', 'class' => 'bg-green-100 text-green-800'],
     'reglamento_titulacion' => ['label' => 'Reglamento Titulación', 'class' => 'bg-amber-100 text-amber-800'],
+    'reglamento_admision'   => ['label' => 'Reglamento de Admisión', 'class' => 'bg-orange-100 text-orange-800'],
     'reglamento_interno'    => ['label' => 'Reglamentos Internos', 'class' => 'bg-indigo-100 text-indigo-800'],
+    'reglamento_macro'      => ['label' => 'Reglamentos Macro', 'class' => 'bg-purple-100 text-purple-800'],
     'otro'                  => ['label' => 'Otro Documento', 'class' => 'bg-gray-100 text-gray-800'],
 ];
 ?>

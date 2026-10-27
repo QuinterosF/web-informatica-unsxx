@@ -44,14 +44,16 @@ ob_start();
                         <option value="horario_clases" <?= (isset($old['categoria']) && $old['categoria'] === 'horario_clases') ? 'selected' : '' ?>>Horario de Clases</option>
                         <option value="reglamento_titulacion" <?= (isset($old['categoria']) && $old['categoria'] === 'reglamento_titulacion') ? 'selected' : '' ?>>Reglamento de Titulación
                         </option>
+                        <option value="reglamento_admision" <?= (isset($old['categoria']) && $old['categoria'] === 'reglamento_admision') ? 'selected' : '' ?>>Reglamento de Admisión</option>
                         <option value="reglamento_interno" <?= (isset($old['categoria']) && $old['categoria'] === 'reglamento_interno') ? 'selected' : '' ?>>Reglamentos Internos</option>
+                        <option value="reglamento_macro" <?= (isset($old['categoria']) && $old['categoria'] === 'reglamento_macro') ? 'selected' : '' ?>>Reglamentos Macro</option>
                         <option value="otro" <?= (isset($old['categoria']) && $old['categoria'] === 'otro') ? 'selected' : '' ?>>Otro Documento</option>
                     </select>
                 </div>
 
                 <!-- Gestión (Año/Periodo) -->
                 <div>
-                    <label for="gestion" class="block text-sm font-medium text-gray-700 mb-1">Gestión / Año <span
+                    <label for="gestion" class="block text-sm font-medium text-gray-700 mb-1">Vigente desde la gestión <span
                             class="text-red-500">*</span></label>
                     <input type="text" id="gestion" name="gestion" required placeholder="Ej: I/2027 o 2027"
                         value="<?= htmlspecialchars($old['gestion'] ?? date('Y')) ?>"

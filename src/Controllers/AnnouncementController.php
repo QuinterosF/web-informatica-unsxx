@@ -260,4 +260,21 @@ class AnnouncementController extends Controller
         header('Location: /announcements');
         exit;
     }
+
+    /**
+     * Alterna el estado de "Fijado" de un comunicado
+     * POST /announcements/{id}/pin
+     */
+    public function togglePin(int $id): void
+    {
+        try {
+            $this->model->togglePinned($id);
+            $_SESSION['success'] = 'Estado de fijación actualizado correctamente.';
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Error al cambiar el estado: ' . $e->getMessage();
+        }
+
+        header('Location: /announcements');
+        exit;
+    }
 }

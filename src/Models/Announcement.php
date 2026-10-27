@@ -185,4 +185,34 @@ class Announcement
         }
         return (int)$stmt->fetchColumn() > 0;
     }
+
+    /**
+     * Fija o desfija un comunicado garantizando que máximo 1 esté fijado
+     */
+    public function togglePinned(int $id): bool
+    {
+        // 1. Verificar estado actual
+        $stmt = $this->pdo->prepare("SELECT fijado FROM comunicado WHERE id_com = ?");
+        $stmt->execute([$id]);
+        $isPinned = (int) $stmt->fetchColumn();
+
+        $this->pdo->beginTransaction();
+        try {
+            if ($isPinned === 1) {
+                // Si ya estaba fijado, simplemente lo desfijamos (queda 0 comunicados fijados)
+                $stmt = $this->pdo->prepare("UPDATE comunicado SET fijado = 0 WHERE id_com = ?");
+                $stmt->execute([$id]);
+            } else {
+                // Si no estaba fijado, limpiamos todos y fijamos solo este
+                $this->pdo->exec("UPDATE comunicado SET fijado = 0");
+                $stmt = $this->pdo->prepare("UPDATE comunicado SET fijado = 1 WHERE id_com = ?");
+                $stmt->execute([$id]);
+            }
+            $this->pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
 }

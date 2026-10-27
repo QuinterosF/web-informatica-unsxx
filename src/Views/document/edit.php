@@ -47,15 +47,18 @@ ob_start();
                         <option value="horario_clases" <?= $catActual === 'horario_clases' ? 'selected' : '' ?>>Horario de
                             Clases</option>
                         <option value="reglamento_titulacion" <?= $catActual === 'reglamento_titulacion' ? 'selected' : '' ?>>Reglamento de Titulación</option>
+                        <option value="reglamento_admision" <?= $catActual === 'reglamento_admision' ? 'selected' : '' ?>>Reglamento de Admisión</option>
                         <option value="reglamento_interno" <?= $catActual === 'reglamento_interno' ? 'selected' : '' ?>>
                             Reglamentos Internos</option>
+                        <option value="reglamento_macro" <?= $catActual === 'reglamento_macro' ? 'selected' : '' ?>>
+                            Reglamentos Macro</option>
                         <option value="otro" <?= $catActual === 'otro' ? 'selected' : '' ?>>Otro Documento</option>
                     </select>
                 </div>
 
                 <!-- Gestión -->
                 <div>
-                    <label for="gestion" class="block text-sm font-medium text-gray-700 mb-1">Gestión / Año <span
+                    <label for="gestion" class="block text-sm font-medium text-gray-700 mb-1">Vigente desde la gestión <span
                             class="text-red-500">*</span></label>
                     <input type="text" id="gestion" name="gestion" required
                         value="<?= htmlspecialchars($old['gestion'] ?? $document['gestion'] ?? '') ?>"

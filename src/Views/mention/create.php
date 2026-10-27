@@ -3,7 +3,6 @@ $title = 'Nueva Mención / Instituto - Informática UNSXX';
 $pageTitle = 'Nueva Mención / Instituto';
 ob_start();
 
-// Validamos cómo pasó OpenCode la variable (coordinators o academics)
 $listCoordinators = $coordinators ?? $academics ?? [];
 ?>
 

@@ -66,7 +66,7 @@ class OfficialDocument
             }
         }
 
-        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_admision', 'reglamento_interno', 'reglamento_macro', 'otro'];
         // Si la categoría no es válida, asignar 'otro' por defecto
         if (!in_array($data['categoria'], $allowedCategories, true)) {
             $data['categoria'] = 'otro';
@@ -106,7 +106,7 @@ class OfficialDocument
             }
         }
 
-        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_interno', 'otro'];
+        $allowedCategories = ['plan_estudios', 'horario_clases', 'reglamento_titulacion', 'reglamento_admision', 'reglamento_interno', 'reglamento_macro', 'otro'];
         // Si la categoría no es válida, asignar 'otro' por defecto
         if (!in_array($data['categoria'], $allowedCategories, true)) {
             $data['categoria'] = 'otro';

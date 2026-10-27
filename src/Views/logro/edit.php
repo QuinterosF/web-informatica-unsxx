@@ -9,11 +9,11 @@ $anioActual = date('Y', strtotime($logro['fech_log']));
 
 <div class="flex justify-between items-center mb-6">
     <h2 class="text-xl font-bold text-unsxx-blue-900">Editar: <?= htmlspecialchars($logro['nom_log']) ?></h2>
-    <a href="/logros" class="inline-flex items-center gap-2 text-unsxx-blue-600 hover:text-unsxx-blue-800 font-medium">Volver</a>
+    <a href="/admin/logros" class="inline-flex items-center gap-2 text-unsxx-blue-600 hover:text-unsxx-blue-800 font-medium">Volver</a>
 </div>
 
 <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-unsxx-blue-100 overflow-hidden p-6 sm:p-8">
-    <form action="/logros/<?= $logro['id_log'] ?>/edit" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form action="/admin/logros/<?= $logro['id_log'] ?>/edit" method="POST" enctype="multipart/form-data" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Posición Alcanzada <span class="text-red-500">*</span></label>
@@ -70,7 +70,7 @@ $anioActual = date('Y', strtotime($logro['fech_log']));
         </div>
         
         <div class="flex justify-end gap-4 pt-4 border-t border-gray-100">
-            <a href="/logros" class="px-6 py-2 border text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancelar</a>
+            <a href="/admin/logros" class="px-6 py-2 border text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancelar</a>
             <button type="submit" class="px-6 py-2 bg-unsxx-yellow-400 text-unsxx-blue-900 font-bold rounded-lg shadow-sm hover:bg-unsxx-yellow-500 transition-colors">Actualizar Logro</button>
         </div>
     </form>

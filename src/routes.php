@@ -41,6 +41,21 @@ $adminOnly = static function (): void {
 
 /* ==================== RUTAS PÚBLICAS ==================== */
 $router->get('/', [HomeController::class, 'index']);
+$router->get('/nosotros', [HomeController::class, 'nosotros']);
+$router->get('/admision', [HomeController::class, 'admision']);
+$router->get('/titulacion', [HomeController::class, 'titulacion']);
+$router->get('/becas', [HomeController::class, 'becas']);
+$router->get('/contacto', [HomeController::class, 'contacto']);
+$router->get('/plan-estudios', [HomeController::class, 'planEstudios']);
+$router->get('/menciones', [HomeController::class, 'menciones']);
+$router->get('/docentes', [HomeController::class, 'plantel']);
+$router->get('/documentos', [HomeController::class, 'documentos']);
+$router->get('/laboratorios', [HomeController::class, 'laboratorios']);
+$router->get('/comunicados', [HomeController::class, 'comunicados']);
+$router->get('/eventos', [HomeController::class, 'eventos']);
+$router->get('/logros', [HomeController::class, 'logros']);
+$router->get('/carrera', [HomeController::class, 'carrera']);
+$router->get('/comunidad', [HomeController::class, 'comunidad']);
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
@@ -51,8 +66,28 @@ $router->get('/unauthorized', function () {
             <p>No tienes los permisos necesarios para ver esta página.</p>
             <br>
             <a href='/dashboard' style='padding: 10px 20px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px;'>Volver a mi panel</a>
-          </div>";
+        </div>";
 });
+
+/* ==================== RUTAS PÚBLICAS ACTUALIZADAS ==================== */
+$router->get('/carrera/autoridades', [HomeController::class, 'autoridades']);
+$router->get('/academico/plan-estudios', [HomeController::class, 'planEstudios']);
+$router->get('/academico/admision', [HomeController::class, 'admision']);
+$router->get('/academico/titulacion', [HomeController::class, 'titulacion']);
+$router->get('/logros', [HomeController::class, 'logros']);
+$router->get('/carrera/logros', [HomeController::class, 'logros']);
+$router->get('/documentos', [HomeController::class, 'documentos']);
+$router->get('/plan-estudios', [HomeController::class, 'planEstudios']);
+$router->get('/horarios', [HomeController::class, 'horarios']);
+$router->get('/titulacion', [HomeController::class, 'titulacion']);
+$router->get('/laboratorios', [HomeController::class, 'laboratorios']);
+$router->get('/mencion/seguridad-informatica', [HomeController::class, 'mencionSeguridad']);
+$router->get('/mencion/computacion-movil', [HomeController::class, 'mencionMovil']);
+$router->get('/investigacion/iidai', [HomeController::class, 'institutoIidai']);
+$router->get('/eventos', [HomeController::class, 'eventos']);
+$router->get('/extension', [HomeController::class, 'eventos']);
+$router->get('/eventos', [HomeController::class, 'eventos']);
+$router->get('/extension/{slug}', [HomeController::class, 'eventos']);
 
 /* ==================== PANEL Y DASHBOARD ==================== */
 $router->get('/dashboard', [HomeController::class, 'dashboard'])
@@ -149,6 +184,7 @@ $router->post('/extensions/{id_ext}/gallery/{id_foto}/delete', [ExtensionControl
 $router->post('/extensions/{id_ext}/gallery/{id_foto}/cover', [ExtensionController::class, 'setCover'])
     ->middleware($moduleGuard('extensions'));
 
+
 /* ==================== CRUD COMUNICADOS ==================== */
 $router->get('/announcements', [AnnouncementController::class, 'index'])
     ->middleware($moduleGuard('communications'));
@@ -164,6 +200,8 @@ $router->post('/announcements/{id}/edit', [AnnouncementController::class, 'updat
 $router->post('/announcements/{id}', [AnnouncementController::class, 'update'])
     ->middleware($moduleGuard('communications'));
 $router->post('/announcements/{id}/delete', [AnnouncementController::class, 'destroy'])
+    ->middleware($moduleGuard('communications'));
+$router->post('/announcements/{id}/pin', [AnnouncementController::class, 'togglePin'])
     ->middleware($moduleGuard('communications'));
 
 /* ==================== CRUD ADMISIÓN ==================== */
@@ -274,19 +312,19 @@ $router->post('/portadas/{id}/toggle', [PortadaController::class, 'toggle'])
     ->middleware($moduleGuard('portadas'));
 
 /* ==================== LOGROS INSTITUCIONALES ==================== */
-$router->get('/logros', [LogroController::class, 'index'])
+$router->get('/admin/logros', [LogroController::class, 'index'])
     ->middleware($moduleGuard('logros'));
-$router->get('/logros/create', [LogroController::class, 'create'])
+$router->get('/admin/logros/create', [LogroController::class, 'create'])
     ->middleware($moduleGuard('logros'));
-$router->post('/logros', [LogroController::class, 'store'])
+$router->post('/admin/logros', [LogroController::class, 'store'])
     ->middleware($moduleGuard('logros'));
-$router->get('/logros/{id}/edit', [LogroController::class, 'edit'])
+$router->get('/admin/logros/{id}/edit', [LogroController::class, 'edit'])
     ->middleware($moduleGuard('logros'));
-$router->post('/logros/{id}/edit', [LogroController::class, 'update'])
+$router->post('/admin/logros/{id}/edit', [LogroController::class, 'update'])
     ->middleware($moduleGuard('logros'));
-$router->post('/logros/{id}/delete', [LogroController::class, 'destroy'])
+$router->post('/admin/logros/{id}/delete', [LogroController::class, 'destroy'])
     ->middleware($moduleGuard('logros'));
-$router->post('/logros/{id}/toggle', [LogroController::class, 'toggle'])
+$router->post('/admin/logros/{id}/toggle', [LogroController::class, 'toggle'])
     ->middleware($moduleGuard('logros'));
 
 /* ==================== USUARIOS, ROLES Y CONTRASEÑA ==================== */

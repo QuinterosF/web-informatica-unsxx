@@ -108,7 +108,7 @@ ob_start();
             <!-- Descripción -->
             <div>
                 <label for="desc_ext" class="block text-sm font-medium text-gray-700 mb-1">
-                    Crónica / Descripción del Evento <span class="text-red-500">*</span>
+                    Descripción del Evento <span class="text-red-500">*</span>
                 </label>
                 <textarea id="desc_ext" name="desc_ext" required rows="6"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-unsxx-blue-500 focus:border-unsxx-blue-500 outline-none transition-all resize-y"><?= htmlspecialchars($old['desc_ext'] ?? $extension['desc_ext'] ?? '') ?></textarea>

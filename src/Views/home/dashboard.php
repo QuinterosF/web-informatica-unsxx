@@ -451,7 +451,7 @@ ob_start();
                         <span class="text-gray-400 group-hover:text-unsxx-blue-700 font-bold">+</span>
                     </a>
 
-                    <a href="/logros/create"
+                    <a href="/admin/logros/create"
                         class="flex items-center justify-between p-3 rounded-xl border border-gray-200 hover:border-unsxx-blue-400 hover:bg-blue-50/50 transition-all group">
                         <div class="flex items-center gap-3">
                             <span

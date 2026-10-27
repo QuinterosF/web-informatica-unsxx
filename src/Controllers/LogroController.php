@@ -18,7 +18,7 @@ class LogroController extends Controller
 
     /**
      * Listado de logros
-     * GET /logros
+     * GET /admin/logros
      */
     public function index(): void
     {
@@ -31,7 +31,7 @@ class LogroController extends Controller
 
     /**
      * Formulario de creación
-     * GET /logros/create
+     * GET /admin/logros/create
      */
     public function create(): void
     {
@@ -44,7 +44,7 @@ class LogroController extends Controller
 
     /**
      * Guarda un nuevo logro
-     * POST /logros
+     * POST /admin/logros
      */
     public function store(): void
     {
@@ -64,7 +64,7 @@ class LogroController extends Controller
         try {
             $this->model->create($data);
             $_SESSION['success'] = 'Logro registrado correctamente';
-            $this->redirect('/logros');
+            $this->redirect('/admin/logros');
         } catch (\Exception $e) {
             // Rollback: borrar la imagen subida si falla la inserción
             if (!empty($data['foto_logro'])) {
@@ -76,7 +76,7 @@ class LogroController extends Controller
 
     /**
      * Formulario de edición
-     * GET /logros/{id}/edit
+     * GET /admin/logros/{id}/edit
      */
     public function edit(int $id): void
     {
@@ -84,7 +84,7 @@ class LogroController extends Controller
 
         if (!$logro) {
             $_SESSION['error'] = 'Logro no encontrado';
-            $this->redirect('/logros');
+            $this->redirect('/admin/logros');
         }
 
         $this->view('logro/edit', [
@@ -97,7 +97,7 @@ class LogroController extends Controller
 
     /**
      * Actualiza un logro
-     * POST /logros/{id}/edit
+     * POST /admin/logros/{id}/edit
      */
     public function update(int $id): void
     {
@@ -105,7 +105,7 @@ class LogroController extends Controller
 
         if (!$logroActual) {
             $_SESSION['error'] = 'Logro no encontrado';
-            $this->redirect('/logros');
+            $this->redirect('/admin/logros');
         }
 
         $data = $this->collectData();
@@ -137,7 +137,7 @@ class LogroController extends Controller
         try {
             $this->model->update($id, $data);
             $_SESSION['success'] = 'Logro actualizado correctamente';
-            $this->redirect('/logros');
+            $this->redirect('/admin/logros');
         } catch (\Exception $e) {
             // Rollback: si se subió una foto nueva, eliminarla
             if ($nuevaFoto && !empty($data['foto_logro'])) {
@@ -149,7 +149,7 @@ class LogroController extends Controller
 
     /**
      * Elimina un logro y su foto física
-     * POST /logros/{id}/delete
+     * POST /admin/logros/{id}/delete
      */
     public function destroy(int $id): void
     {
@@ -157,7 +157,7 @@ class LogroController extends Controller
 
         if (!$logro) {
             $_SESSION['error'] = 'Logro no encontrado';
-            $this->redirect('/logros');
+            $this->redirect('/admin/logros');
         }
 
         try {
@@ -172,12 +172,12 @@ class LogroController extends Controller
             $_SESSION['error'] = 'Error al eliminar: ' . $e->getMessage();
         }
 
-        $this->redirect('/logros');
+        $this->redirect('/admin/logros');
     }
 
     /**
      * Alterna el estado activo/inactivo
-     * POST /logros/{id}/toggle
+     * POST /admin/logros/{id}/toggle
      */
     public function toggle(int $id): void
     {
@@ -188,7 +188,7 @@ class LogroController extends Controller
             $_SESSION['error'] = 'Error al actualizar el estado: ' . $e->getMessage();
         }
 
-        $this->redirect('/logros');
+        $this->redirect('/admin/logros');
     }
 
     /* ==================== AUXILIARES ==================== */
