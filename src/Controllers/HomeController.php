@@ -49,15 +49,7 @@ class HomeController extends Controller
 
     public function nosotros(): void
     {
-        $portal = new PublicPortal();
-        $academics = $portal->getAcademicsGrouped();
-
-        $this->renderPublicView('public/carrera/nosotros', $portal, [
-            'title' => 'Nosotros - Ingeniería Informática UNSXX',
-            'pageTitle' => 'Nosotros',
-            'authorities' => $academics['authorities'],
-            'academics' => $academics,
-        ]);
+        $this->redirect('/carrera/autoridades');
     }
 
     public function admision(): void
@@ -99,12 +91,7 @@ class HomeController extends Controller
 
     public function becas(): void
     {
-        $portal = new PublicPortal();
-
-        $this->renderPublicView('public/carrera/becas', $portal, [
-            'title' => 'Becas - Ingeniería Informática UNSXX',
-            'pageTitle' => 'Becas',
-        ]);
+        $this->redirect('/admision');
     }
 
     public function contacto(): void
@@ -130,13 +117,7 @@ class HomeController extends Controller
 
     public function menciones(): void
     {
-        $portal = new PublicPortal();
-
-        $this->renderPublicView('public/academico/menciones', $portal, [
-            'title' => 'Menciones - Ingeniería Informática UNSXX',
-            'pageTitle' => 'Menciones',
-            'mentions' => $portal->getMentions(),
-        ]);
+        $this->redirect('/academico/plan-estudios');
     }
 
     public function plantel(): void
@@ -258,7 +239,7 @@ class HomeController extends Controller
 
     public function carrera(): void
     {
-        $this->nosotros();
+        $this->redirect('/carrera/autoridades');
     }
 
     public function comunidad(): void

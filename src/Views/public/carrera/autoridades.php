@@ -133,7 +133,7 @@ $mensajeDirectorLimpio = formatearTextoQuill($info['mensaje_director'] ?? '');
                     <div class="pr-2">
                         <div class="flex items-baseline gap-2 mt-0.5">
                             <span class="font-display font-extrabold text-2xl sm:text-3xl text-white"><?= $totalAutoridades ?></span>
-                            <span class="text-s text-slate-200 font-medium">Autoridades</span>
+                            <span class="text-s text-slate-200 font-medium">Autoridades Académicas</span>
                         </div>
                     </div>
                 </div>

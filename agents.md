@@ -24,7 +24,7 @@ Web institucional de Ingeniería Informática (UNSXX). MVC propio en **PHP 8 nat
 - Middleware de rutas: auth `[AuthMiddleware::class, 'handle']`, módulos `$moduleGuard(...)`, admin `$adminOnly`.
 - `$moduleGuard` usa claves de `User::MODULES`, no el prefijo URL: `/announcements`→`communications`, `/labs`→`laboratories`, `/mentions`→`curricular`, `/directory`→`redes`. `/admin/logros` usa el módulo `logros`, **no** es `$adminOnly`.
 - El router inyecta parámetros **por nombre** vía reflexión: el argumento debe escribirse igual que `{param}`. El repo usa guiones bajos (`$id_lab`, `$id_foto`, `$id_cat`, `$id_ext`); un nombre distinto no se inyecta.
-- Controladores extienden `App\Core\Controller`; `view()` hace `extract($data)` y añade `.php` a la ruta exacta bajo `src/Views/` (`public/home` = `public/home.php`, no `public/home/index.php`). Las vistas del panel cargan `layouts/app.php`; las públicas, `layouts/rich_text.php` y `layouts/public.php`.
+- Controladores extienden `App\Core\Controller`; `view()` hace `extract($data)` y añade `.php` a la ruta exacta bajo `src/Views/` (`public/home` = `public/home.php`, no `public/home/index.php`). Las vistas del panel cargan `layouts/app.php`; las públicas, `layouts/public.php`.
 - Sesión: el login guarda `$_SESSION['user']` (`id`, `name`, `email`, `role_id`, `role`, `logged_at`) y también `user_id`, `user_name`, `user_role`, `user_modules`, `user_acad_id`, `user_lab_ids`. Usa `Session`/`Auth`; `Auth::isAdmin()` compara `role` con el string `admin`.
 - `/dashboard` es el panel único; `/admin` redirige a `/dashboard` y `HomeController::adminDashboard()` solo redirige.
 

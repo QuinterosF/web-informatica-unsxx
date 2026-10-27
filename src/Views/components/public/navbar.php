@@ -24,7 +24,9 @@ $enlacesServicios     = $enlacesServicios ?? [];
                 </a>
             </div>
 
-            <!-- Menú Escritorio -->
+            <!-- ========================================== -->
+            <!-- MENÚ DE ESCRITORIO (Desktop) -->
+            <!-- ========================================== -->
             <div class="hidden lg:flex items-center space-x-1 xl:space-x-2">
                 <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:text-institucional-gold transition-colors">Inicio</a>
                 
@@ -46,8 +48,6 @@ $enlacesServicios     = $enlacesServicios ?? [];
                     <button class="px-3 py-2 rounded-md text-sm font-medium hover:text-institucional-gold transition-colors flex items-center gap-1">
                         Académico <i class="fas fa-chevron-down text-xs opacity-70"></i>
                     </button>
-
-
                     <div class="absolute left-0 mt-0 w-60 bg-white text-slate-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border-t-4 border-institucional-gold overflow-hidden">
                         <a href="/academico/plan-estudios" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy border-b border-slate-100">Plan de Estudios</a>
                         <a href="/academico/admision" class="block px-4 py-2.5 text-sm hover:bg-slate-50 hover:text-institucional-navy">Admisión y Becas</a>
@@ -61,7 +61,7 @@ $enlacesServicios     = $enlacesServicios ?? [];
                     </div>
                 </div>
 
-                <!-- Dropdown: Investigación (Incluye enlaces de 'menu_investigacion') -->
+                <!-- Dropdown: Investigación -->
                 <div class="relative group">
                     <button class="px-3 py-2 rounded-md text-sm font-medium hover:text-institucional-gold transition-colors flex items-center gap-1">
                         Investigación <i class="fas fa-chevron-down text-xs opacity-70"></i>
@@ -91,7 +91,7 @@ $enlacesServicios     = $enlacesServicios ?? [];
                     </div>
                 </div>
 
-                <!-- Dropdown: Servicios Principales ('menu_servicios') -->
+                <!-- Dropdown: Servicios Principales -->
                 <?php if (!empty($enlacesServicios)): ?>
                 <div class="relative group">
                     <button class="px-3 py-2 rounded-md text-sm font-medium hover:text-institucional-gold transition-colors flex items-center gap-1">
@@ -132,17 +132,101 @@ $enlacesServicios     = $enlacesServicios ?? [];
         </div>
     </div>
 
-    <!-- Menú Móvil Desplegable -->
-    <div id="mobile-menu" class="hidden lg:hidden bg-[#172e6e] border-t border-institucional-gold/30 max-h-[80vh] overflow-y-auto">
-        <div class="px-3 pt-2 pb-4 flex flex-col">
-            <a href="/" class="px-3 py-2.5 text-sm font-semibold hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Inicio</a>
-            <a href="/carrera/autoridades" class="px-3 py-2.5 text-sm font-medium hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Autoridades Académicas</a>
-            <a href="/docentes" class="px-3 py-2.5 text-sm font-medium hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Plantel Docente</a>
-            <a href="/academico/plan-estudios" class="px-3 py-2.5 text-sm font-medium hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Plan de Estudios</a>
-            <a href="/laboratorios" class="px-3 py-2.5 text-sm font-medium hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Laboratorios y Horarios</a>
-            <a href="/comunicados" class="px-3 py-2.5 text-sm font-medium hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Comunicados</a>
-            <a href="/admision" class="px-3 py-2.5 text-sm font-bold text-institucional-gold hover:bg-[#1e3a8a] border-b border-institucional-gold/20">Admisión</a>
-            <a href="/contacto" class="px-3 py-2.5 text-sm font-medium hover:bg-[#1e3a8a]">Contacto</a>
+    <!-- ========================================== -->
+    <!-- MENÚ MÓVIL DESPLEGABLE (100% Acordeones) -->
+    <!-- ========================================== -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-[#172e6e] border-t border-institucional-gold/30 max-h-[85vh] overflow-y-auto shadow-inner">
+        <div class="flex flex-col pb-6">
+            
+            <a href="/" class="px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#1e3a8a] border-b border-white/10">Inicio</a>
+            
+            <!-- Institución -->
+            <details class="group">
+                <summary class="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-white hover:bg-[#1e3a8a] border-b border-white/10 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <span>Institución</span>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 opacity-70"></i>
+                </summary>
+                <div class="flex flex-col bg-[#11235a] border-b border-white/10">
+                    <a href="/carrera/autoridades" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Autoridades Académicas</a>
+                    <a href="/docentes" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Plantel Docente</a>
+                    <a href="/carrera/logros" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Logros</a>
+                    <a href="/documentos" class="px-8 py-3 text-sm text-slate-300 hover:text-white">Reglamentos y Documentos</a>
+                </div>
+            </details>
+
+            <!-- Académico -->
+            <details class="group">
+                <summary class="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-white hover:bg-[#1e3a8a] border-b border-white/10 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <span>Académico</span>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 opacity-70"></i>
+                </summary>
+                <div class="flex flex-col bg-[#11235a] border-b border-white/10">
+                    <a href="/academico/plan-estudios" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Plan de Estudios</a>
+                    <a href="/academico/admision" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Admisión y Becas</a>
+                    <a href="/academico/titulacion" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Titulación</a>
+                    <a href="/laboratorios" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Laboratorios</a>
+                    <a href="/horarios" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Horarios de Clase</a>
+                    <div class="px-8 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-[#0d1b47] border-b border-white/5">Menciones</div>
+                    <a href="/mencion/seguridad-informatica" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Seguridad Informática</a>
+                    <a href="/mencion/computacion-movil" class="px-8 py-3 text-sm text-slate-300 hover:text-white">Computación Móvil</a>
+                </div>
+            </details>
+
+            <!-- Investigación -->
+            <details class="group">
+                <summary class="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-white hover:bg-[#1e3a8a] border-b border-white/10 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <span>Investigación</span>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 opacity-70"></i>
+                </summary>
+                <div class="flex flex-col bg-[#11235a] border-b border-white/10">
+                    <a href="/investigacion/iidai" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Instituto IIDAI</a>
+                    <?php foreach ($enlacesInvestigacion as $enl): ?>
+                        <a href="<?= htmlspecialchars($enl['url']) ?>" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5 last:border-b-0">
+                            <span class="flex items-center gap-3">
+                                <i class="<?= htmlspecialchars($enl['icono'] ?: 'fas fa-book-open') ?> text-sm text-institucional-gold"></i>
+                                <?= htmlspecialchars($enl['nombre']) ?>
+                            </span>
+                            <i class="fas fa-external-link-alt text-[10px] opacity-50"></i>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </details>
+
+            <!-- Comunidad -->
+            <details class="group">
+                <summary class="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-white hover:bg-[#1e3a8a] border-b border-white/10 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <span>Comunidad</span>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 opacity-70"></i>
+                </summary>
+                <div class="flex flex-col bg-[#11235a] border-b border-white/10">
+                    <a href="/comunicados" class="px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5">Comunicados</a>
+                    <a href="/extension" class="px-8 py-3 text-sm text-slate-300 hover:text-white">Extensión Universitaria</a>
+                </div>
+            </details>
+
+            <!-- Servicios (Solo si hay enlaces) -->
+            <?php if (!empty($enlacesServicios)): ?>
+            <details class="group">
+                <summary class="flex items-center justify-between px-5 py-3.5 text-sm font-medium text-white hover:bg-[#1e3a8a] border-b border-white/10 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <span>Servicios</span>
+                    <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-open:rotate-180 opacity-70"></i>
+                </summary>
+                <div class="flex flex-col bg-[#11235a] border-b border-white/10">
+                    <?php foreach ($enlacesServicios as $serv): ?>
+                        <a href="<?= htmlspecialchars($serv['url']) ?>" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-8 py-3 text-sm text-slate-300 hover:text-white border-b border-white/5 last:border-b-0">
+                            <span class="flex items-center gap-3">
+                                <i class="<?= htmlspecialchars($serv['icono'] ?: 'fas fa-globe') ?> text-sm text-institucional-gold"></i>
+                                <?= htmlspecialchars($serv['nombre']) ?>
+                            </span>
+                            <i class="fas fa-external-link-alt text-[10px] opacity-50"></i>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </details>
+            <?php endif; ?>
+
+            <a href="/admision" class="px-5 py-3.5 text-sm font-bold text-institucional-gold hover:bg-[#1e3a8a] border-b border-white/10">Admisión</a>
+            <a href="/contacto" class="px-5 py-3.5 text-sm font-medium text-white hover:bg-[#1e3a8a] border-b border-white/10">Contacto</a>
         </div>
     </div>
 </nav>
